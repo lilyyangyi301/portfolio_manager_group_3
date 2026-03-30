@@ -12,7 +12,12 @@ function App() {
       {/* Simple Navigation Menu */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center gap-6">
-          <h1 className="text-xl font-bold text-primary mr-4">InvestPro</h1>
+          <div className="flex items-center text-primary mr-4">
+            <span className="material-symbols-outlined mr-2" style={{ fontSize: '24px', color: '#1f1f1f' }}>
+              finance_mode
+            </span>
+            <h1 className="text-xl font-bold">InvestPro</h1>
+          </div>
           <nav className="flex gap-2">
             <button 
               onClick={() => setActiveTab('dashboard')}
