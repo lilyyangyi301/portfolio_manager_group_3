@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { FeatureShowcase } from './components/FeatureShowcase';
-import { WatchlistPage } from './pages/WatchlistPage';
 import { StockFinderPanel } from './components/StockFinderPanel';
+import { FullScreenChart } from './pages/FullScreenChart';
 import './index.css';
 
-function App() {
+function MainLayout() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
-    <div className="min-h-screen bg-neutral flex flex-col">
-      {/* Simple Navigation Menu */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center gap-6">
-          <div className="flex items-center text-primary mr-4">
+    <div className="min-h-screen bg-neutral flex flex-col animate-fadeIn">
+      {/* Navigation Menu */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm z-10 sticky top-0">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center text-primary">
             <span className="material-symbols-outlined mr-2" style={{ fontSize: '24px', color: '#1f1f1f' }}>
               finance_mode
             </span>
@@ -24,12 +25,6 @@ function App() {
               className={`tab-button ${activeTab === 'dashboard' ? 'active' : ''}`}
             >
               Dashboard
-            </button>
-            <button 
-              onClick={() => setActiveTab('watchlist')}
-              className={`tab-button ${activeTab === 'watchlist' ? 'active' : ''}`}
-            >
-              Watchlist
             </button>
             <button 
               onClick={() => setActiveTab('stock-finder')}
@@ -46,17 +41,26 @@ function App() {
           <div className="w-full flex items-center justify-center">
             <FeatureShowcase />
           </div>
-        ) : activeTab === 'watchlist' ? (
-          <WatchlistPage />
         ) : (
           <div className="w-full flex items-center justify-center">
-            <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
               <StockFinderPanel />
             </div>
           </div>
         )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />} />
+        <Route path="/chart/:ticker" element={<FullScreenChart />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

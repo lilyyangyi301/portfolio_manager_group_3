@@ -1,11 +1,14 @@
 import React from 'react';
 import { WatchlistButton } from './WatchlistButton';
+import { Link } from 'react-router-dom';
+import { ArrowRightLeft, Maximize2 } from 'lucide-react';
 
 export const StockDetailCard = ({
   stock,
   onAddToWatchlist,
   isInWatchlist,
   isLoading,
+  onTransactionClick
 }) => {
   const formatNumber = (num) => {
     if (num >= 1000000000) {
@@ -77,14 +80,34 @@ export const StockDetailCard = ({
         ))}
       </div>
 
-      {/* Add to Watchlist Button */}
-      <WatchlistButton
-        stock={stock}
-        onAddToWatchlist={onAddToWatchlist}
-        isInWatchlist={isInWatchlist}
-        isLoading={isLoading}
-        fullWidth
-      />
+      <div className="flex flex-col gap-4">
+        {/* Add to Watchlist Button */}
+        <WatchlistButton
+          stock={stock}
+          onAddToWatchlist={onAddToWatchlist}
+          isInWatchlist={isInWatchlist}
+          isLoading={isLoading}
+          fullWidth
+        />
+
+        {/* Actions Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link 
+            to={`/chart/${stock.symbol}`}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-primary hover:bg-gray-50 transition-colors"
+          >
+            <Maximize2 size={16} />
+            Full Chart
+          </Link>
+          <button
+            onClick={() => onTransactionClick?.()}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+          >
+            <ArrowRightLeft size={16} />
+            Trade
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
