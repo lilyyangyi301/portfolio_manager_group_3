@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FeatureShowcase } from './components/FeatureShowcase';
 import { WatchlistPage } from './pages/WatchlistPage';
+import { StockFinderPanel } from './components/StockFinderPanel';
 import './index.css';
 
 function App() {
@@ -25,6 +26,12 @@ function App() {
             >
               Watchlist
             </button>
+            <button 
+              onClick={() => setActiveTab('stock-finder')}
+              className={`tab-button ${activeTab === 'stock-finder' ? 'active' : ''}`}
+            >
+              Stock Finder
+            </button>
           </nav>
         </div>
       </header>
@@ -34,8 +41,14 @@ function App() {
           <div className="w-full flex items-center justify-center">
             <FeatureShowcase />
           </div>
-        ) : (
+        ) : activeTab === 'watchlist' ? (
           <WatchlistPage />
+        ) : (
+          <div className="w-full flex items-center justify-center">
+            <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+              <StockFinderPanel />
+            </div>
+          </div>
         )}
       </main>
     </div>
