@@ -116,11 +116,6 @@ export const mockData = {
       title: 'Assess risks and performance',
       description: 'Evaluate portfolio risk metrics and benchmarks',
     },
-    {
-      id: 6,
-      title: 'Stock Finder',
-      description: 'Search stocks, review details, and save them to your watchlist',
-    },
   ],
 
   stocks: [

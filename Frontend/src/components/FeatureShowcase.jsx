@@ -6,7 +6,6 @@ import { PerformancePanel } from './PerformancePanel';
 import { PotentialPanel } from './PotentialPanel';
 import { DiversificationPanel } from './DiversificationPanel';
 import { RiskPanel } from './RiskPanel';
-import { StockFinderPanel } from './StockFinderPanel';
 import { mockData } from '../data/mockData';
 
 const PANELS = [
@@ -15,7 +14,6 @@ const PANELS = [
   PotentialPanel,
   DiversificationPanel,
   RiskPanel,
-  StockFinderPanel,
 ];
 
 export const FeatureShowcase = () => {
