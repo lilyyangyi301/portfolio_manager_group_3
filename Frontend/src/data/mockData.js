@@ -1,6 +1,5 @@
 export const mockData = {
   portfolio: {
-    name: 'My main portfolio',
     value: 125430.50,
     unrealizedGain: 12540.75,
     realizedGain: 5230.25,
@@ -24,12 +23,12 @@ export const mockData = {
   ],
 
   performanceByPeriod: [
-    { period: '1 month', return: 8.2, positive: true },
-    { period: '3 month', return: 15.4, positive: true },
-    { period: '6 month', return: 22.8, positive: true },
+    { period: '1 Month', return: 8.2, positive: true },
+    { period: '3 Month', return: 15.4, positive: true },
+    { period: '6 Month', return: 22.8, positive: true },
     { period: 'YTD', return: 25.43, positive: true },
-    { period: '1 year', return: 32.1, positive: true },
-    { period: 'All time', return: 45.6, positive: true },
+    { period: '1 Year', return: 32.1, positive: true },
+    { period: 'All Time', return: 45.6, positive: true },
   ],
 
   holdings: [
@@ -93,28 +92,23 @@ export const mockData = {
   features: [
     {
       id: 1,
-      title: 'Start in seconds',
-      description: 'Build your investment portfolio instantly',
+      title: 'Main Portfolio',
     },
     {
       id: 2,
-      title: 'Control investment performance',
-      description: 'Monitor and track your returns in real-time',
+      title: 'Investment Performance',
     },
     {
       id: 3,
-      title: 'Measure potential',
-      description: 'Analyze individual holdings and opportunities',
+      title: 'Holdings Performance',
     },
     {
       id: 4,
-      title: 'Manage diversification',
-      description: 'Optimize your asset allocation strategy',
+      title: 'Portfolio Distribution',
     },
     {
       id: 5,
-      title: 'Assess risks and performance',
-      description: 'Evaluate portfolio risk metrics and benchmarks',
+      title: 'Risk Assessment',
     },
   ],
 

@@ -15,7 +15,6 @@ export const PerformancePanel = () => {
         {/* Chart */}
         <div className="lg:col-span-2 bg-gray-50 rounded-xl p-4 border border-gray-100">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="font-semibold text-primary text-sm">Portfolio change</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => setChartType('value')}
@@ -32,7 +31,7 @@ export const PerformancePanel = () => {
             </div>
           </div>
 
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={280} className="mt-8">
             <LineChart data={history}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '11px' }} />
@@ -60,7 +59,6 @@ export const PerformancePanel = () => {
 
         {/* Performance by Period */}
         <div className="space-y-2">
-          <h4 className="font-semibold text-primary text-sm mb-3">Performance</h4>
           {periods.map((period) => (
             <button
               key={period.period}
