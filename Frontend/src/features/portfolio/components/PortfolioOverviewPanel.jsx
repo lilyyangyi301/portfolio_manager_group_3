@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { mockData } from '../data/mockData';
+import { mockData } from '../../../data/mockData';
+import { getPortfolioOverview } from '../services/portfolioService';
 
 export const PortfolioOverviewPanel = () => {
   const [chartType, setChartType] = useState('value');
@@ -16,15 +17,7 @@ export const PortfolioOverviewPanel = () => {
       setError(null);
 
       try {
-        // Call the backend API through Vite proxy
-        // Vite will proxy /api/* requests to http://172.20.10.2:8080
-        const response = await fetch('/api/v1/dashboard/StartInSeconds');
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await getPortfolioOverview();
 
         // Bind response fields to state
         setPortfolio({

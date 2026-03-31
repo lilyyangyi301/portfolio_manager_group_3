@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { getDiversificationData } from '../services/portfolioService';
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
 
@@ -33,12 +34,7 @@ export const DiversificationPanel = () => {
       setError(null);
 
       try {
-        const response = await fetch(`/api/v1/dashboard/ManageDiversification/${activeType}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await getDiversificationData(activeType);
 
         // Expected response:
         // [{ categoryName, totalValue, allocationPct, unrealizedGain }]

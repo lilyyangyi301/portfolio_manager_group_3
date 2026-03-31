@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Globe, User, Menu, X } from 'lucide-react';
-import { mockData } from '../data/mockData';
+import { mockData } from '../../data/mockData';
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

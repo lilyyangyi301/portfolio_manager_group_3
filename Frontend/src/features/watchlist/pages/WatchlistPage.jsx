@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { WatchlistItem } from '../components/Watchlist/WatchlistItem';
-import { SearchBar } from '../components/Watchlist/SearchBar';
-import { getInitialWatchlist, subscribeToPriceUpdates } from '../services/stockService';
 import { Activity } from 'lucide-react';
+import { SearchBar } from '../components/SearchBar';
+import { WatchlistItem } from '../components/WatchlistItem';
+import { getInitialWatchlist, subscribeToPriceUpdates } from '../../stock/services/stockService';
 
 export const WatchlistPage = () => {
   const [watchlist, setWatchlist] = useState([]);

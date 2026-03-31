@@ -1,7 +1,7 @@
 import React from 'react';
-import { WatchlistButton } from './WatchlistButton';
 import { Link } from 'react-router-dom';
 import { ArrowRightLeft, Maximize2 } from 'lucide-react';
+import { WatchlistButton } from '../../watchlist/components/WatchlistButton';
 
 export const StockDetailCard = ({
   stock,

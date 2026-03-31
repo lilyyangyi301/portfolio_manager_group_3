@@ -1,5 +1,5 @@
 import React from 'react';
-import { WatchlistButton } from './WatchlistButton';
+import { WatchlistButton } from '../../watchlist/components/WatchlistButton';
 
 export const StockTable = ({
   stocks,

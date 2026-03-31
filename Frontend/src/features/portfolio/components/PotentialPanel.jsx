@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { getPotentialData } from '../services/portfolioService';
 
 export const PotentialPanel = () => {
   const [filterType, setFilterType] = useState('All');
@@ -10,11 +11,7 @@ export const PotentialPanel = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/v1/dashboard/MeasurePotential');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await getPotentialData();
         setHoldings(data);
         setLoading(false);
       } catch (err) {

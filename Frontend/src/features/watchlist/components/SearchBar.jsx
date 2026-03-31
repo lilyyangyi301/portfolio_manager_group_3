@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, X } from 'lucide-react';
-import { searchTicker } from '../../services/stockService';
+import { searchTicker } from '../../stock/services/stockService';
 
 export const SearchBar = ({ onAdd }) => {
   const [query, setQuery] = useState('');

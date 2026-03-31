@@ -1,5 +1,5 @@
 import React from 'react';
-import { mockData } from '../data/mockData';
+import { mockData } from '../../../data/mockData';
 import { LayoutDashboard, TrendingUp, Activity, PieChart, ShieldCheck, Layers } from 'lucide-react';
 
 const getIconForTitle = (title) => {

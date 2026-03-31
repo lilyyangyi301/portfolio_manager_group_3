@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, ArrowRightLeft } from 'lucide-react';
-import { mockData } from '../data/mockData';
+import { mockData } from '../../../data/mockData';
 import { StockTable } from './StockTable';
 import { StockDetailCard } from './StockDetailCard';
-import { TransactionModal } from './TransactionModal';
+import { TransactionModal } from '../../../components/common/TransactionModal';
 
 export const StockFinderPanel = () => {
   const [searchQuery, setSearchQuery] = useState('');

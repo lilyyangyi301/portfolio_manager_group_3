@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { getPerformanceData } from '../services/portfolioService';
 
 export const PerformancePanel = () => {
   const [chartType, setChartType] = useState('value');
@@ -16,12 +17,7 @@ export const PerformancePanel = () => {
       setError(null);
 
       try {
-        const response = await fetch('/api/v1/dashboard/ControlInvestment');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await getPerformanceData();
 
         // Bind chartData to existing line chart
         setHistory(Array.isArray(data.chartData) ? data.chartData : []);

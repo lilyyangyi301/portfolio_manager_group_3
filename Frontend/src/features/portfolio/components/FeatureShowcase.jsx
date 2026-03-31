@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FeatureMenu } from './FeatureMenu';
 import { PortfolioOverviewPanel } from './PortfolioOverviewPanel';
 import { PerformancePanel } from './PerformancePanel';
 import { PotentialPanel } from './PotentialPanel';
 import { DiversificationPanel } from './DiversificationPanel';
 import { RiskPanel } from './RiskPanel';
-import { mockData } from '../data/mockData';
-
 const PANELS = [
   PortfolioOverviewPanel,
   PerformancePanel,
