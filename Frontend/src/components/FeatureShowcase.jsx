@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FeatureMenu } from './FeatureMenu';
-import { CarouselControls } from './CarouselControls';
 import { PortfolioOverviewPanel } from './PortfolioOverviewPanel';
 import { PerformancePanel } from './PerformancePanel';
 import { PotentialPanel } from './PotentialPanel';
@@ -18,31 +17,8 @@ const PANELS = [
 
 export const FeatureShowcase = () => {
   const [activeFeature, setActiveFeature] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(true);
 
   const ActivePanel = PANELS[activeFeature - 1];
-
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    const timer = setInterval(() => {
-      setActiveFeature((prev) => (prev === mockData.features.length ? 1 : prev + 1));
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, [isPlaying]);
-
-  const handlePrevious = () => {
-    setActiveFeature((prev) => (prev === 1 ? mockData.features.length : prev - 1));
-  };
-
-  const handleNext = () => {
-    setActiveFeature((prev) => (prev === mockData.features.length ? 1 : prev + 1));
-  };
-
-  const handleTogglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
 
   return (
     <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -58,16 +34,6 @@ export const FeatureShowcase = () => {
             <ActivePanel />
           </div>
         </div>
-
-        {/* Carousel Controls */}
-        <CarouselControls
-          currentIndex={activeFeature - 1}
-          totalItems={mockData.features.length}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          isPlaying={isPlaying}
-          onTogglePlay={handleTogglePlay}
-        />
       </div>
     </div>
   );
