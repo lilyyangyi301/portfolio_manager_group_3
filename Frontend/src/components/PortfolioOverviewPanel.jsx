@@ -28,7 +28,7 @@ export const PortfolioOverviewPanel = () => {
 
         // Bind response fields to state
         setPortfolio({
-          name: data.portfolioName || 'My main portfolio',
+          name: data.portfolioName || '',
           value: data.portfolioValue || 0,
           unrealizedGain: data.unrealizedGain || 0,
           realizedGain: data.realizedGain || 0,

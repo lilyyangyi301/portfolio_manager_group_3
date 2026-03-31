@@ -140,7 +140,7 @@ export const DiversificationPanel = () => {
 
         {/* Distribution Table (right panel) */}
         <div className="space-y-2">
-          <h4 className="font-semibold text-primary text-sm mb-3">Portfolio distribution</h4>
+          {/* <h4 className="font-semibold text-primary text-sm mb-3">Portfolio distribution</h4> */}
           {currentData.map((item) => (
             <div key={item.categoryName} className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
