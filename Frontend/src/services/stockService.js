@@ -80,3 +80,58 @@ export const getStockPrice = async (ticker) => {
     }, 200);
   });
 };
+
+/**
+ * Generates mock OHLC data for the charts
+ */
+export const getOHLCData = async (ticker) => {
+  return new Promise(resolve => {
+    // Generate 100 days of mock candle data ending today
+    setTimeout(() => {
+      const stock = mockStocks[ticker] || { price: 150 }; // Fallback to 150 if not found
+      
+      const data = [];
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      
+      let currentPrice = stock.price * 0.8; // Random start roughly 20% lower
+      const volatility = 0.02; // 2% daily volatility
+
+      // Generate 100 days of data, going backwards
+      for (let i = 100; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        
+        // Skip weekends
+        if (date.getDay() === 0 || date.getDay() === 6) continue;
+
+        const open = currentPrice;
+        const change = currentPrice * (Math.random() * volatility * 2 - volatility);
+        const close = open + change;
+        const high = Math.max(open, close) + (Math.random() * currentPrice * volatility);
+        const low = Math.min(open, close) - (Math.random() * currentPrice * volatility);
+
+        data.push({
+          time: date.toISOString().split('T')[0],
+          open,
+          high,
+          low,
+          close,
+        });
+
+        currentPrice = close;
+      }
+
+      // Force the last candle to match the actual current price
+      if (data.length > 0 && mockStocks[ticker]) {
+        const last = data[data.length - 1];
+        last.close = mockStocks[ticker].price;
+        // Adjust high/low if necessary
+        last.high = Math.max(last.high, last.close);
+        last.low = Math.min(last.low, last.close);
+      }
+
+      resolve(data);
+    }, 400); // Simulate network latency
+  });
+};

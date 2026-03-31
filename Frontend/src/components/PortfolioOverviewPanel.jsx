@@ -21,10 +21,6 @@ export const PortfolioOverviewPanel = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-primary">{portfolio.name}</h3>
-        <button className="btn btn-primary flex items-center gap-2 text-sm">
-          <Plus size={16} />
-          Add transaction
-        </button>
       </div>
 
       {/* Metrics Grid */}
