@@ -39,8 +39,6 @@ export const RiskPanel = () => {
 
   return (
     <div className="animate-fadeIn space-y-4">
-      <h3 className="text-lg font-semibold text-primary">Risk Assessment</h3>
-
       {riskMetrics.map((metric, idx) => (
         <div key={idx} className="bg-white rounded-xl border border-gray-200 p-4">
           {/* Header */}

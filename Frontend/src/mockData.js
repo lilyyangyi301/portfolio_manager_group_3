@@ -31,28 +31,23 @@ export const mockData = {
   featureShowcase: [
     {
       id: 1,
-      title: 'Start in seconds',
-      description: 'Get your portfolio up and running instantly',
+      title: 'Main Portfolio',
     },
     {
       id: 2,
-      title: 'Control investment performance',
-      description: 'Track and analyze your investment returns',
+      title: 'Investment Performance',
     },
     {
       id: 3,
-      title: 'Measure potential',
-      description: 'Identify top performers and opportunities',
+      title: 'Holdings Performance',
     },
     {
       id: 4,
-      title: 'Manage diversification',
-      description: 'Optimize your asset allocation strategy',
+      title: 'Portfolio Distribution',
     },
     {
       id: 5,
-      title: 'Assess risks and performance',
-      description: 'Understand your portfolio risk profile',
+      title: 'Risk Assessment',
     },
   ],
 
@@ -86,12 +81,12 @@ export const mockData = {
       { date: 'Aug', value: 125430 },
     ],
     timeRanges: [
-      { label: '1 month', value: 2.5, positive: true },
-      { label: '3 month', value: 5.8, positive: true },
-      { label: '6 month', value: 8.2, positive: true },
+      { label: '1 Month', value: 2.5, positive: true },
+      { label: '3 Month', value: 5.8, positive: true },
+      { label: '6 Month', value: 8.2, positive: true },
       { label: 'YTD', value: 14.35, positive: true },
-      { label: '1 year', value: 18.9, positive: true },
-      { label: 'All time', value: 24.5, positive: true },
+      { label: '1 Year', value: 18.9, positive: true },
+      { label: 'All Time', value: 24.5, positive: true },
     ],
   },
 

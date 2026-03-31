@@ -1,3 +1,5 @@
+import { mockData } from '../data/mockData';
+
 // Mock data for initial watchlist testing
 const mockStocks = {
   AAPL: { ticker: 'AAPL', name: 'Apple Inc.', price: 173.50, change: 1.25, changePercent: 0.72 },
@@ -76,7 +78,23 @@ export const searchTicker = async (query) => {
 export const getStockPrice = async (ticker) => {
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve(mockStocks[ticker] || null);
+      let stock = mockStocks[ticker];
+      if (!stock) {
+        // Fallback to mockData
+        const fallback = mockData.stocks.find(s => s.symbol === ticker);
+        if (fallback) {
+          stock = {
+            ticker: fallback.symbol,
+            name: fallback.companyName,
+            price: fallback.currentPrice,
+            change: fallback.priceChange,
+            changePercent: fallback.priceChangePercent,
+          };
+          // Also dynamically add it to mockStocks for future queries
+          mockStocks[ticker] = stock;
+        }
+      }
+      resolve(stock || null);
     }, 200);
   });
 };

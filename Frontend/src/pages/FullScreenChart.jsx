@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createChart, ColorType } from 'lightweight-charts';
+import { createChart, CandlestickSeries } from 'lightweight-charts';
 import { ArrowLeft, Moon, Sun, TrendingUp, TrendingDown } from 'lucide-react';
 import { getStockPrice, getOHLCData } from '../services/stockService';
 
@@ -60,7 +60,7 @@ export const FullScreenChart = () => {
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: backgroundColor },
+        background: { type: 'solid', color: backgroundColor },
         textColor: textColor,
       },
       grid: {
@@ -76,7 +76,7 @@ export const FullScreenChart = () => {
       autoSize: true, 
     });
 
-    const candlestickSeries = chart.addCandlestickSeries({
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#10B981', 
       downColor: '#EF4444', 
       borderVisible: false,

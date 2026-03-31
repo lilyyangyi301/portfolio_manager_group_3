@@ -10,10 +10,10 @@ export const PortfolioOverviewPanel = () => {
   const history = mockData.portfolioHistory;
 
   const metrics = [
-    { label: 'Portfolio value', value: `$${portfolio.value.toLocaleString('en-US', { maximumFractionDigits: 2 })}` },
-    { label: 'Unrealized gain', value: `$${portfolio.unrealizedGain.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, positive: true },
-    { label: 'Realized gain', value: `$${portfolio.realizedGain.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, positive: true },
-    { label: 'Total gain', value: `$${portfolio.totalGain.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, positive: true },
+    { label: 'Portfolio Value', value: `$${portfolio.value.toLocaleString('en-US', { maximumFractionDigits: 2 })}` },
+    { label: 'Unrealized Gain', value: `$${portfolio.unrealizedGain.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, positive: true },
+    { label: 'Realized Gain', value: `$${portfolio.realizedGain.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, positive: true },
+    { label: 'Total Gain', value: `$${portfolio.totalGain.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, positive: true },
   ];
 
   return (
@@ -38,7 +38,7 @@ export const PortfolioOverviewPanel = () => {
       {/* Chart Section */}
       <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-semibold text-primary text-sm">Portfolio change</h4>
+          <h4 className="font-semibold text-primary text-sm"></h4>
           <div className="flex gap-2">
             <button
               onClick={() => setChartType('value')}

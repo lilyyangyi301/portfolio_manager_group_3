@@ -6,6 +6,7 @@ export const StockTable = ({
   selectedStock,
   onSelectStock,
   onAddToWatchlist,
+  onRemoveFromWatchlist,
   isInWatchlist,
   isLoading,
 }) => {
@@ -84,6 +85,7 @@ export const StockTable = ({
                   <WatchlistButton
                     stock={stock}
                     onAddToWatchlist={onAddToWatchlist}
+                    onRemoveFromWatchlist={onRemoveFromWatchlist}
                     isInWatchlist={isInWatchlist(stock.symbol)}
                     isLoading={isLoading(stock.symbol)}
                   />

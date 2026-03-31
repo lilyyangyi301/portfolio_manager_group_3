@@ -6,6 +6,7 @@ import { ArrowRightLeft, Maximize2 } from 'lucide-react';
 export const StockDetailCard = ({
   stock,
   onAddToWatchlist,
+  onRemoveFromWatchlist,
   isInWatchlist,
   isLoading,
   onTransactionClick
@@ -81,10 +82,11 @@ export const StockDetailCard = ({
       </div>
 
       <div className="flex flex-col gap-4">
-        {/* Add to Watchlist Button */}
+        {/* Add/Remove from Watchlist Button */}
         <WatchlistButton
           stock={stock}
           onAddToWatchlist={onAddToWatchlist}
+          onRemoveFromWatchlist={onRemoveFromWatchlist}
           isInWatchlist={isInWatchlist}
           isLoading={isLoading}
           fullWidth
