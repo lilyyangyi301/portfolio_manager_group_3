@@ -1,35 +1,109 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { mockData } from '../data/mockData';
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
+
+const TAB_CONFIG = [
+  { label: 'Assets', type: 'assets' },
+  { label: 'Asset types', type: 'asset-types' },
+  { label: 'Sectors', type: 'sectors' },
+  { label: 'Currency', type: 'currency' },
+];
 
 export const DiversificationPanel = () => {
-  const [activeTab, setActiveTab] = useState('Assets');
+  const [activeType, setActiveType] = useState('assets');
+  const [currentData, setCurrentData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const diversificationData = {
-    Assets: mockData.diversification.byAssets,
-    'Asset types': mockData.diversification.byAssetTypes,
-    Sectors: mockData.diversification.bySectors,
-    Currency: mockData.diversification.byCurrency,
+  // Stable color mapping by categoryName (same category always gets same color)
+  const categoryColorMap = useMemo(() => {
+    const map = {};
+    currentData.forEach((item) => {
+      const key = item.categoryName || '';
+      const hash = key.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      map[key] = COLORS[hash % COLORS.length];
+    });
+    return map;
+  }, [currentData]);
+
+  useEffect(() => {
+    const fetchDiversification = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/v1/dashboard/ManageDiversification/${activeType}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Expected response:
+        // [{ categoryName, totalValue, allocationPct, unrealizedGain }]
+        const normalized = Array.isArray(data)
+          ? data.map((item) => ({
+              categoryName: item.categoryName,
+              totalValue: Number(item.totalValue || 0),
+              allocationPct: Number(item.allocationPct || 0),
+              unrealizedGain: Number(item.unrealizedGain || 0),
+            }))
+          : [];
+
+        setCurrentData(normalized);
+      } catch (err) {
+        console.error('Error fetching diversification data:', err);
+        setError(err.message);
+        setCurrentData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDiversification();
+  }, [activeType]);
+
+  const formatCurrency = (value) => {
+    return `$${value.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
   };
 
-  const currentData = diversificationData[activeTab];
+  const formatPct = (value) => `${value.toFixed(2)}%`;
+
+  const activeTabLabel = TAB_CONFIG.find((tab) => tab.type === activeType)?.label || 'Assets';
 
   return (
     <div className="animate-fadeIn">
       {/* Tabs */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-        {Object.keys(diversificationData).map((tab) => (
+        {TAB_CONFIG.map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`tab-button whitespace-nowrap text-xs ${activeTab === tab ? 'active' : ''}`}
+            key={tab.type}
+            onClick={() => setActiveType(tab.type)}
+            className={`tab-button whitespace-nowrap text-xs ${activeType === tab.type ? 'active' : ''}`}
           >
-            {tab}
+            {tab.label}
           </button>
         ))}
       </div>
+
+      {loading && (
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-100 mb-4">
+          <p className="text-secondary text-sm">Loading diversification data...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <p className="text-red-800 text-sm">Failed to load {activeTabLabel} data: {error}</p>
+        </div>
+      )}
+
+      {!loading && !error && currentData.length === 0 && (
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-100 mb-4">
+          <p className="text-secondary text-sm">No diversification data available.</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Donut Chart */}
@@ -43,14 +117,15 @@ export const DiversificationPanel = () => {
                 innerRadius={60}
                 outerRadius={100}
                 paddingAngle={2}
-                dataKey="value"
+                dataKey="allocationPct"
+                nameKey="categoryName"
               >
-                {currentData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                {currentData.map((entry) => (
+                  <Cell key={entry.categoryName} fill={categoryColorMap[entry.categoryName]} />
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => `$${value.toLocaleString()}`}
+                formatter={(value, name, props) => [formatPct(Number(value)), props.payload.categoryName]}
                 contentStyle={{
                   backgroundColor: '#fff',
                   border: '1px solid #e5e7eb',
@@ -63,21 +138,24 @@ export const DiversificationPanel = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Distribution Table */}
+        {/* Distribution Table (right panel) */}
         <div className="space-y-2">
-          {currentData.map((item, idx) => (
-            <div key={idx} className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow">
+          {/* <h4 className="font-semibold text-primary text-sm mb-3">Portfolio distribution</h4> */}
+          {currentData.map((item) => (
+            <div key={item.categoryName} className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-medium text-primary text-sm">{item.name}</p>
-                <p className="text-xs font-bold text-accent">{item.percentage}%</p>
+                <p className="font-medium text-primary text-sm">{item.categoryName}</p>
+                <p className="text-xs font-bold" style={{ color: categoryColorMap[item.categoryName] }}>
+                  {formatPct(item.allocationPct)}
+                </p>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
                 <div
-                  className="bg-accent rounded-full h-1.5 transition-all duration-300"
-                  style={{ width: `${item.percentage}%` }}
+                  className="rounded-full h-1.5 transition-all duration-300"
+                  style={{ width: `${item.allocationPct}%`, backgroundColor: categoryColorMap[item.categoryName] }}
                 />
               </div>
-              <p className="text-xs text-secondary mt-1">${item.value.toLocaleString()}</p>
+              <p className="text-xs text-secondary mt-1">{formatCurrency(item.totalValue)}</p>
             </div>
           ))}
         </div>
@@ -96,12 +174,14 @@ export const DiversificationPanel = () => {
               </tr>
             </thead>
             <tbody>
-              {mockData.diversificationTable.map((row, idx) => (
-                <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2 font-medium text-primary text-sm">{row.type}</td>
-                  <td className="px-4 py-2 text-primary text-sm">{row.value}</td>
-                  <td className="px-4 py-2 text-primary text-sm">{row.allocation}</td>
-                  <td className="px-4 py-2 text-positive font-medium text-sm">{row.gain}</td>
+              {currentData.map((row) => (
+                <tr key={row.categoryName} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-2 font-medium text-primary text-sm">{row.categoryName}</td>
+                  <td className="px-4 py-2 text-primary text-sm">{formatCurrency(row.totalValue)}</td>
+                  <td className="px-4 py-2 text-primary text-sm">{formatPct(row.allocationPct)}</td>
+                  <td className={`px-4 py-2 font-medium text-sm ${row.unrealizedGain >= 0 ? 'text-positive' : 'text-negative'}`}>
+                    {row.unrealizedGain >= 0 ? '+' : ''}{formatCurrency(row.unrealizedGain)}
+                  </td>
                 </tr>
               ))}
             </tbody>
