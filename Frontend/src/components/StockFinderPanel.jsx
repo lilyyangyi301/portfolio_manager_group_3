@@ -143,6 +143,7 @@ export const StockFinderPanel = () => {
             selectedStock={selectedStock}
             onSelectStock={setSelectedStock}
             onAddToWatchlist={handleAddToWatchlist}
+            onRemoveFromWatchlist={handleRemoveFromWatchlist}
             isInWatchlist={isInWatchlist}
             isLoading={isLoading}
           />
@@ -154,6 +155,7 @@ export const StockFinderPanel = () => {
             <StockDetailCard
               stock={selectedStock}
               onAddToWatchlist={handleAddToWatchlist}
+              onRemoveFromWatchlist={handleRemoveFromWatchlist}
               isInWatchlist={isInWatchlist(selectedStock.symbol)}
               isLoading={isLoading(selectedStock.symbol)}
               onTransactionClick={() => setTransactionStock(selectedStock)}
