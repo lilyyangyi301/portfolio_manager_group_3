@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { FeatureShowcase } from './features/portfolio/components/FeatureShowcase';
 import { StockFinderPanel } from './features/stock/components/StockFinderPanel';
 import { FullScreenChart } from './features/stock/pages/FullScreenChart';
-import { WatchlistPage } from './features/watchlist/pages/WatchlistPage';
 import './index.css';
 
 function MainLayout() {
@@ -60,7 +59,6 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />} />
         <Route path="/chart/:ticker" element={<FullScreenChart />} />
-        <Route path="/watchlist" element={<WatchlistPage />} />
       </Routes>
     </BrowserRouter>
   );
