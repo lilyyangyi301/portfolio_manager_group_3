@@ -77,7 +77,6 @@ export const PotentialPanel = () => {
 
       {/* Chart */}
       <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-4">
-        <h4 className="font-semibold text-primary text-sm mb-3">Holdings performance</h4>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 50, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
