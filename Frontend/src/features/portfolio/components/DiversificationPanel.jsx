@@ -84,26 +84,25 @@ export const DiversificationPanel = () => {
       </div>
 
       {loading && (
-        <div className="bg-gray-50 rounded-lg p-6 border border-gray-100 mb-4">
-          <p className="text-secondary text-sm">Loading diversification data...</p>
+        <div className="terminal-loading mb-4">
+          <p className="text-sm terminal-muted">Loading diversification data...</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <p className="text-red-800 text-sm">Failed to load {activeTabLabel} data: {error}</p>
+        <div className="terminal-error mb-4">
+          <p className="text-sm text-[#FFD7DD]">Failed to load {activeTabLabel} data: {error}</p>
         </div>
       )}
 
       {!loading && !error && currentData.length === 0 && (
-        <div className="bg-gray-50 rounded-lg p-6 border border-gray-100 mb-4">
-          <p className="text-secondary text-sm">No diversification data available.</p>
+        <div className="terminal-empty mb-4">
+          <p className="text-sm terminal-muted">No diversification data available.</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Donut Chart */}
-        <div className="flex items-center justify-center bg-gray-50 rounded-xl p-4 border border-gray-100">
+        <div className="terminal-surface flex items-center justify-center rounded-[20px] p-4">
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -123,58 +122,56 @@ export const DiversificationPanel = () => {
               <Tooltip
                 formatter={(value, name, props) => [formatPct(Number(value)), props.payload.categoryName]}
                 contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: '#0F1726',
+                  border: '1px solid #22314A',
                   borderRadius: '8px',
                   fontSize: '12px',
+                  color: '#E8F0FB',
                 }}
               />
-              <Legend wrapperStyle={{ fontSize: '12px' }} />
+              <Legend wrapperStyle={{ fontSize: '12px', color: '#8FA2BC' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Distribution Table (right panel) */}
         <div className="space-y-2">
-          {/* <h4 className="font-semibold text-primary text-sm mb-3">Portfolio distribution</h4> */}
           {currentData.map((item) => (
-            <div key={item.categoryName} className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow">
+            <div key={item.categoryName} className="rounded-lg border border-[#1C2940] bg-[#0F1726] p-3 transition-shadow hover:border-[#385173]">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-medium text-primary text-sm">{item.categoryName}</p>
+                <p className="text-sm font-medium text-[#E8F0FB]">{item.categoryName}</p>
                 <p className="text-xs font-bold" style={{ color: categoryColorMap[item.categoryName] }}>
                   {formatPct(item.allocationPct)}
                 </p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
+              <div className="h-1.5 w-full rounded-full bg-[#162133]">
                 <div
                   className="rounded-full h-1.5 transition-all duration-300"
                   style={{ width: `${item.allocationPct}%`, backgroundColor: categoryColorMap[item.categoryName] }}
                 />
               </div>
-              <p className="text-xs text-secondary mt-1">{formatCurrency(item.totalValue)}</p>
+              <p className="mt-1 text-xs text-[#8FA2BC]">{formatCurrency(item.totalValue)}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Detailed Table */}
-      <div className="mt-4 bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="terminal-surface mt-4 overflow-hidden rounded-[20px]">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="border-b border-[#1C2940] bg-[#0F1726]">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Asset type</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Holding value</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Allocation</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Unrealized gain</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Asset type</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Holding value</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Allocation</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Unrealized gain</th>
               </tr>
             </thead>
             <tbody>
               {currentData.map((row) => (
-                <tr key={row.categoryName} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2 font-medium text-primary text-sm">{row.categoryName}</td>
-                  <td className="px-4 py-2 text-primary text-sm">{formatCurrency(row.totalValue)}</td>
-                  <td className="px-4 py-2 text-primary text-sm">{formatPct(row.allocationPct)}</td>
+                <tr key={row.categoryName} className="border-b border-[#162133] transition-colors hover:bg-[rgba(17,25,40,0.96)]">
+                  <td className="px-4 py-2 text-sm font-medium text-[#E8F0FB]">{row.categoryName}</td>
+                  <td className="px-4 py-2 text-sm text-[#DCE7F5]">{formatCurrency(row.totalValue)}</td>
+                  <td className="px-4 py-2 text-sm text-[#DCE7F5]">{formatPct(row.allocationPct)}</td>
                   <td className={`px-4 py-2 font-medium text-sm ${row.unrealizedGain >= 0 ? 'text-positive' : 'text-negative'}`}>
                     {row.unrealizedGain >= 0 ? '+' : ''}{formatCurrency(row.unrealizedGain)}
                   </td>

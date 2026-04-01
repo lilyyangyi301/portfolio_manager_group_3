@@ -7,21 +7,19 @@ export const TransactionModal = ({ stock, onClose }) => {
   const [status, setStatus] = useState('idle');
 
   // fallback to generic price if not easily resolvable from mocked data
-  const price = stock.currentPrice || stock.price || 0; 
+  const price = stock.currentPrice || stock.price || 0;
   const totalValue = (price * quantity).toFixed(2);
   const priceChange = stock.priceChangePercent ?? stock.changePercent ?? 0;
   const isPositive = priceChange >= 0;
 
   const handleTransaction = () => {
     if (quantity <= 0) return;
-    
+
     setLoading(true);
-    // Simulate API transaction delay
     setTimeout(() => {
       setLoading(false);
       setStatus('success');
-      
-      // Auto-close after showing success
+
       setTimeout(() => {
         onClose();
       }, 1500);
@@ -31,49 +29,52 @@ export const TransactionModal = ({ stock, onClose }) => {
   if (!stock) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
-        
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+    <div className="fixed inset-0 z-[100] flex animate-fadeIn items-center justify-center bg-[rgba(3,7,13,0.72)] p-4 backdrop-blur-sm">
+      <div
+        className="terminal-surface relative w-full max-w-md overflow-hidden rounded-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.45)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-[#1C2940] p-6">
           <div>
-            <h2 className="text-2xl font-bold text-primary">{stock.symbol || stock.ticker}</h2>
-            <p className="text-secondary">{stock.companyName || stock.name}</p>
+            <h2 className="text-2xl font-bold tracking-[0.16em] text-[#E8F0FB]">{stock.symbol || stock.ticker}</h2>
+            <p className="text-[#8FA2BC]">{stock.companyName || stock.name}</p>
           </div>
-          <button 
+          <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors font-bold"
+            className="rounded-full p-2 font-bold text-[#8FA2BC] hover:bg-[#121C2D] hover:text-[#E8F0FB]"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Status / Content */}
         {status === 'success' ? (
           <div className="p-12 flex flex-col items-center justify-center gap-4 text-center">
-            <div className="w-16 h-16 rounded-full bg-green-100 text-green-500 flex items-center justify-center mb-2">
+            <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border border-[#1F4C38] bg-[rgba(47,203,137,0.12)] text-[#2FCB89]">
               <TrendingUp size={32} />
             </div>
-            <h3 className="text-xl font-bold text-primary">Transaction Complete</h3>
-            <p className="text-secondary">Your order for {quantity} share(s) has been successfully executed.</p>
+            <h3 className="text-xl font-bold text-[#E8F0FB]">Transaction Complete</h3>
+            <p className="text-[#8FA2BC]">Your order for {quantity} share(s) has been successfully executed.</p>
           </div>
         ) : (
           <div className="p-6">
-            
-            {/* Price Info */}
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="text-sm text-secondary mb-1">Current Price</p>
-                <p className="text-3xl font-bold text-primary">${price.toFixed(2)}</p>
+                <p className="mb-1 text-sm text-[#6F86A6]">Current Price</p>
+                <p className="text-3xl font-bold text-[#F3F8FF]">${price.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center text-sm font-semibold px-2 py-1 rounded ${isPositive ? 'bg-green-50 text-success' : 'bg-red-50 text-danger'}`}>
+              <div
+                className={`flex items-center rounded px-2 py-1 text-sm font-semibold ${
+                  isPositive
+                    ? 'bg-[rgba(47,203,137,0.12)] text-success'
+                    : 'bg-[rgba(255,107,107,0.12)] text-danger'
+                }`}
+              >
                 {isPositive ? '+' : ''}{priceChange.toFixed(2)}%
               </div>
             </div>
 
-            {/* Inputs */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-secondary mb-2" htmlFor="quantity">
+              <label className="mb-2 block text-sm font-medium text-[#8FA2BC]" htmlFor="quantity">
                 Shares Quantity
               </label>
               <input
@@ -81,33 +82,31 @@ export const TransactionModal = ({ stock, onClose }) => {
                 type="number"
                 min="1"
                 step="1"
-                className="w-full text-lg p-3 border border-gray-200 rounded-xl focus:ring-accent focus:border-transparent outline-none transition-all"
+                className="w-full rounded-xl border border-[#23314A] bg-[#0F1726] p-3 text-lg text-[#E8F0FB] outline-none focus:border-[#5FA8FF] focus:ring-2 focus:ring-[rgba(95,168,255,0.25)]"
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || '' ))}
+                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || ''))}
               />
             </div>
 
-            {/* Summary */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-6 flex justify-between items-center">
-              <span className="font-semibold text-secondary">Estimated Total</span>
-              <span className="text-xl font-bold text-primary">${totalValue}</span>
+            <div className="mb-6 flex items-center justify-between rounded-xl border border-[#1C2940] bg-[#0F1726] p-4">
+              <span className="font-semibold text-[#8FA2BC]">Estimated Total</span>
+              <span className="text-xl font-bold text-[#F3F8FF]">${totalValue}</span>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-4">
               <button
                 onClick={handleTransaction}
                 disabled={loading || !quantity}
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold text-lg transition-colors flex items-center justify-center disabled:opacity-50"
+                className="flex flex-1 items-center justify-center rounded-xl bg-[#1F9A6A] py-3 text-lg font-bold text-[#F3F8FF] hover:bg-[#28B77F] disabled:opacity-50"
               >
                 {loading ? 'Processing...' : 'Buy'}
               </button>
               <button
                 onClick={handleTransaction}
                 disabled={loading || !quantity}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold text-lg transition-colors flex items-center justify-center disabled:opacity-50"
+                className="flex flex-1 items-center justify-center rounded-xl bg-[#C84F5A] py-3 text-lg font-bold text-[#F3F8FF] hover:bg-[#E1626E] disabled:opacity-50"
               >
-                {loading ? 'Processing...' : 'Sell'}
+                {loading ? <TrendingDown size={18} className="animate-pulse" /> : 'Sell'}
               </button>
             </div>
           </div>

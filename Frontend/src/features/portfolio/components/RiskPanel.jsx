@@ -38,11 +38,11 @@ export const RiskPanel = () => {
   return (
     <div className="animate-fadeIn space-y-4">
       {riskMetrics.map((metric, idx) => (
-        <div key={idx} className="bg-white rounded-xl border border-gray-200 p-4">
+        <div key={idx} className="terminal-surface rounded-[20px] p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h4 className="font-semibold text-primary text-sm">{metric.name}</h4>
-              <p className="text-xs text-secondary">{metric.description}</p>
+              <h4 className="text-sm font-semibold text-[#E8F0FB]">{metric.name}</h4>
+              <p className="text-xs text-[#8FA2BC]">{metric.description}</p>
             </div>
             <div className={`text-2xl font-bold ${getRiskColor(metric.name, metric.data.value)}`}>
               {metric.data.value.toFixed(2)}
@@ -51,13 +51,13 @@ export const RiskPanel = () => {
 
           <div className="mb-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-secondary">Low</span>
-              <span className="text-xs text-secondary">Benchmark: {metric.data.benchmark}</span>
-              <span className="text-xs text-secondary">High</span>
+              <span className="text-xs text-[#6F86A6]">Low</span>
+              <span className="text-xs text-[#6F86A6]">Benchmark: {metric.data.benchmark}</span>
+              <span className="text-xs text-[#6F86A6]">High</span>
             </div>
-            <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="relative h-2 w-full overflow-hidden rounded-full bg-[#162133]">
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-gray-400"
+                className="absolute bottom-0 top-0 w-0.5 bg-[#6F86A6]"
                 style={{ left: `${getScalePercentage(metric.data.benchmark)}%` }}
               />
               <div
@@ -73,25 +73,25 @@ export const RiskPanel = () => {
             </div>
           </div>
 
-          <p className="text-xs text-secondary bg-gray-50 rounded-lg p-2">
+          <p className="rounded-lg border border-[#162133] bg-[#0F1726] p-2 text-xs text-[#8FA2BC]">
             {metric.data.description}
           </p>
         </div>
       ))}
 
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-4">
-        <h4 className="font-semibold text-primary text-sm mb-2">Portfolio Risk Summary</h4>
-        <ul className="space-y-1 text-xs text-primary">
+      <div className="rounded-[20px] border border-[#1C2940] bg-[linear-gradient(180deg,rgba(16,25,39,0.98),rgba(11,18,32,0.98))] p-4">
+        <h4 className="mb-2 text-sm font-semibold text-[#E8F0FB]">Portfolio Risk Summary</h4>
+        <ul className="space-y-2 text-xs text-[#DCE7F5]">
           <li className="flex items-start gap-2">
-            <span className="text-accent font-bold">*</span>
+            <span className="font-bold text-accent">*</span>
             <span>Your portfolio has moderate volatility with a Beta of 1.24, indicating slightly higher risk than the market.</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-success font-bold">*</span>
+            <span className="font-bold text-success">*</span>
             <span>Strong risk-adjusted returns with a Sharpe Ratio of 1.85, showing good compensation for risk taken.</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-success font-bold">*</span>
+            <span className="font-bold text-success">*</span>
             <span>Excellent downside protection with a Sortino Ratio of 2.42, demonstrating strong performance during market downturns.</span>
           </li>
         </ul>

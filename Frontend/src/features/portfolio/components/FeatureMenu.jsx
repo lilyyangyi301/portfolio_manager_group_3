@@ -4,18 +4,18 @@ import { LayoutDashboard, TrendingUp, Activity, PieChart, ShieldCheck, Layers } 
 
 const getIconForTitle = (title) => {
   const lowerTitle = title.toLowerCase();
-  if (lowerTitle.includes('main')) return <LayoutDashboard size={20} />;
-  if (lowerTitle.includes('investment')) return <TrendingUp size={20} />;
-  if (lowerTitle.includes('holdings')) return <Activity size={20} />;
-  if (lowerTitle.includes('distribution')) return <PieChart size={20} />;
-  if (lowerTitle.includes('risk')) return <ShieldCheck size={20} />;
-  return <Layers size={20} />;
+  if (lowerTitle.includes('main')) return <LayoutDashboard size={18} strokeWidth={1.85} />;
+  if (lowerTitle.includes('investment')) return <TrendingUp size={18} strokeWidth={1.85} />;
+  if (lowerTitle.includes('holdings')) return <Activity size={18} strokeWidth={1.85} />;
+  if (lowerTitle.includes('distribution')) return <PieChart size={18} strokeWidth={1.85} />;
+  if (lowerTitle.includes('risk')) return <ShieldCheck size={18} strokeWidth={1.85} />;
+  return <Layers size={18} strokeWidth={1.85} />;
 };
 
 export const FeatureMenu = ({ activeFeature, onSelectFeature }) => {
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-4">
+      <h3 className="mb-4 px-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6F86A6]">
         Dashboard Views
       </h3>
       {mockData.features.map((feature) => {
@@ -25,22 +25,20 @@ export const FeatureMenu = ({ activeFeature, onSelectFeature }) => {
           <button
             key={feature.id}
             onClick={() => onSelectFeature(feature.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 outline-none group ${
+            className={`group w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all duration-300 outline-none ${
               isActive
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                : 'bg-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-100/80'
+                ? 'border-[#22314A] bg-[#101927] text-[#E8F0FB] shadow-[0_18px_34px_rgba(0,0,0,0.22)]'
+                : 'border-transparent bg-transparent text-[#8FA2BC] hover:border-[#182336] hover:bg-[#0F1726] hover:text-[#E8F0FB]'
             }`}
           >
-            {/* Dynamic Icon */}
             <div
-              className={`transition-colors duration-300 flex items-center justify-center ${
-                isActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+              className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-300 ${
+                isActive ? 'bg-[#162338] text-[#5FA8FF]' : 'bg-[#0F1726] text-[#6F86A6] group-hover:bg-[#162338] group-hover:text-[#8FC2FF]'
               }`}
             >
               {getIconForTitle(feature.title)}
             </div>
 
-            {/* Title */}
             <span
               className={`font-medium tracking-wide text-sm transition-all duration-300 ${
                 isActive ? 'font-semibold' : ''
@@ -49,9 +47,8 @@ export const FeatureMenu = ({ activeFeature, onSelectFeature }) => {
               {feature.title}
             </span>
 
-            {/* Subtle Active Indicator */}
             {isActive && (
-              <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] animate-pulse"></div>
+              <div className="ml-auto h-8 w-1 rounded-full bg-[#5FA8FF]"></div>
             )}
           </button>
         );

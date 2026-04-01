@@ -52,10 +52,10 @@ export const PortfolioOverviewPanel = () => {
   if (loading) {
     return (
       <div className="animate-fadeIn">
-        <div className="flex items-center justify-center h-96">
+        <div className="terminal-loading flex h-96 items-center justify-center">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-            <p className="text-secondary mt-2 text-sm">Loading portfolio data...</p>
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-accent"></div>
+            <p className="mt-2 text-sm terminal-muted">Loading portfolio data...</p>
           </div>
         </div>
       </div>
@@ -66,10 +66,10 @@ export const PortfolioOverviewPanel = () => {
   if (error && !portfolio) {
     return (
       <div className="animate-fadeIn">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 text-sm font-medium">Error loading portfolio data:</p>
-          <p className="text-red-700 text-xs mt-1">{error}</p>
-          <p className="text-red-600 text-xs mt-2">Using mock data as fallback</p>
+        <div className="terminal-error">
+          <p className="text-sm font-medium text-[#FFD7DD]">Error loading portfolio data:</p>
+          <p className="mt-1 text-xs text-[#FFB5BF]">{error}</p>
+          <p className="mt-2 text-xs text-[#FF9CAA]">Using mock data as fallback</p>
         </div>
       </div>
     );
@@ -79,8 +79,8 @@ export const PortfolioOverviewPanel = () => {
   if (!portfolio) {
     return (
       <div className="animate-fadeIn">
-        <div className="bg-gray-50 rounded-lg p-8 text-center">
-          <p className="text-secondary">No portfolio data available</p>
+        <div className="terminal-empty">
+          <p className="terminal-muted">No portfolio data available</p>
         </div>
       </div>
     );
@@ -95,27 +95,24 @@ export const PortfolioOverviewPanel = () => {
 
   return (
     <div className="animate-fadeIn">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-primary">{portfolio.name}</h3>
+        <h3 className="text-lg font-semibold tracking-[0.1em] text-[#E8F0FB]">{portfolio.name}</h3>
       </div>
 
-      {/* Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {metrics.map((metric, idx) => (
           <div key={idx} className="metric-card">
-            <p className="text-xs text-secondary mb-2">{metric.label}</p>
-            <p className={`text-base font-bold ${metric.positive ? 'text-positive' : 'text-primary'}`}>
+            <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-[#6F86A6]">{metric.label}</p>
+            <p className={`text-base font-bold ${metric.positive ? 'text-positive' : 'text-[#E8F0FB]'}`}>
               {metric.value}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Chart Section */}
-      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+      <div className="terminal-surface rounded-[20px] p-4">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-semibold text-primary text-sm"></h4>
+          <h4 className="text-sm font-semibold text-[#E8F0FB]">Portfolio Trend</h4>
           <div className="flex gap-2">
             <button
               onClick={() => setChartType('value')}
@@ -135,15 +132,16 @@ export const PortfolioOverviewPanel = () => {
         {history.length > 0 ? (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={history}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '11px' }} />
-              <YAxis stroke="#9ca3af" style={{ fontSize: '11px' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#22314A" />
+              <XAxis dataKey="date" stroke="#6F86A6" style={{ fontSize: '11px' }} />
+              <YAxis stroke="#6F86A6" style={{ fontSize: '11px' }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: '#0F1726',
+                  border: '1px solid #22314A',
                   borderRadius: '8px',
                   fontSize: '12px',
+                  color: '#E8F0FB',
                 }}
                 formatter={(value) => `$${value.toLocaleString()}`}
               />
@@ -159,7 +157,7 @@ export const PortfolioOverviewPanel = () => {
           </ResponsiveContainer>
         ) : (
           <div className="flex items-center justify-center h-56">
-            <p className="text-secondary text-sm">No chart data available</p>
+            <p className="text-sm terminal-muted">No chart data available</p>
           </div>
         )}
       </div>

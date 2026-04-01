@@ -46,25 +46,33 @@ export const PotentialPanel = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="terminal-loading">
+        <p className="text-sm terminal-muted">Loading potential data...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="terminal-error">
+        <p className="text-sm font-medium text-[#FFD7DD]">Error loading potential data</p>
+        <p className="mt-1 text-xs text-[#FFB5BF]">{error}</p>
+      </div>
+    );
   }
 
   return (
     <div className="animate-fadeIn">
-      {/* Filter Tabs */}
       <div className="flex gap-2 mb-4">
         {['All', 'Gainers', 'Losers'].map((filter) => (
           <button
             key={filter}
             onClick={() => setFilterType(filter)}
-            className={`px-3 py-1 rounded-lg font-medium text-sm transition-all ${
+            className={`rounded-lg px-3 py-1 text-sm font-medium transition-all ${
               filterType === filter
-                ? 'bg-accent text-white'
-                : 'bg-gray-100 text-secondary hover:bg-gray-200'
+                ? 'bg-[#5FA8FF] text-[#09111D]'
+                : 'border border-[#1C2940] bg-[#0F1726] text-[#8FA2BC] hover:border-[#385173] hover:text-[#E8F0FB]'
             }`}
           >
             {filter}
@@ -72,19 +80,19 @@ export const PotentialPanel = () => {
         ))}
       </div>
 
-      {/* Chart */}
-      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-4">
+      <div className="terminal-surface mb-4 rounded-[20px] p-4">
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 50, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis type="number" stroke="#9ca3af" style={{ fontSize: '11px' }} />
-            <YAxis dataKey="symbol" type="category" stroke="#9ca3af" style={{ fontSize: '11px' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#22314A" />
+            <XAxis type="number" stroke="#6F86A6" style={{ fontSize: '11px' }} />
+            <YAxis dataKey="symbol" type="category" stroke="#6F86A6" style={{ fontSize: '11px' }} />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
+                backgroundColor: '#0F1726',
+                border: '1px solid #22314A',
                 borderRadius: '8px',
                 fontSize: '12px',
+                color: '#E8F0FB',
               }}
               formatter={(value) => `${value.toFixed(1)}%`}
             />
@@ -97,28 +105,27 @@ export const PotentialPanel = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Holdings Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="terminal-surface overflow-hidden rounded-[20px]">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="border-b border-[#1C2940] bg-[#0F1726]">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Symbol</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Name</th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-secondary">Value</th>
-                <th className="px-4 py-2 text-right text-xs font-semibold text-secondary">Change</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Symbol</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Name</th>
+                <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Value</th>
+                <th className="px-4 py-2 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6F86A6]">Change</th>
               </tr>
             </thead>
             <tbody>
               {filteredData.map((holding, idx) => (
-                <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr key={idx} className="border-b border-[#162133] transition-colors hover:bg-[rgba(17,25,40,0.96)]">
                   <td className="px-4 py-2">
-                    <p className="font-semibold text-primary text-sm">{holding.symbol}</p>
+                    <p className="text-sm font-semibold tracking-[0.1em] text-[#E8F0FB]">{holding.symbol}</p>
                   </td>
                   <td className="px-4 py-2">
-                    <p className="text-sm text-secondary">{holding.name}</p>
+                    <p className="text-sm text-[#8FA2BC]">{holding.name}</p>
                   </td>
-                  <td className="px-4 py-2 text-primary font-medium text-sm">
+                  <td className="px-4 py-2 text-sm font-medium text-[#DCE7F5]">
                     ${holding.value.toLocaleString()}
                   </td>
                   <td className="px-4 py-2 text-right">
