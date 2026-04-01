@@ -12,7 +12,7 @@ export const FullScreenChart = () => {
   const [stock, setStock] = useState(null);
   const [ohlcData, setOhlcData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
 
   const isPositive = stock?.changePercent >= 0;
 
