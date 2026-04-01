@@ -131,11 +131,11 @@ export const FullScreenChart = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors text-sm font-medium ${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-secondary hover:bg-white bg-white shadow-sm'}`}
+              onClick={() => navigate('/', { state: { activeTab: 'stock-finder' } })}
+              className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-base font-semibold transition-colors ${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-secondary hover:bg-white bg-white shadow-sm'}`}
             >
-              <ArrowLeft size={16} />
-              Dashboard
+              <ArrowLeft size={18} />
+              Stock Finder
             </button>
             
             <div className={`h-8 w-px ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
