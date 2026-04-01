@@ -8,3 +8,8 @@ export const getPotentialData = () => api.get('/api/v1/dashboard/MeasurePotentia
 
 export const getDiversificationData = (type) =>
   api.get(`/api/v1/dashboard/ManageDiversification/${type}`);
+
+export const getRiskAssessment = () =>
+  api.get('/api/v1/dashboard/RiskAssessment', {
+    timeout: 15000,
+  });
