@@ -79,7 +79,7 @@ public class DashboardController {
     }
     @PostMapping("/refresh")
     public ResponseEntity<String> refresh() {
-        stockPriceService.updateAllPortfolioPrices();
+        stockPriceService.scheduledPriceUpdate();
         return ResponseEntity.ok("Refresh Completed！");
     }
 }

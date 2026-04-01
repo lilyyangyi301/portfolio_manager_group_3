@@ -435,13 +435,20 @@ public class DashboardService {
                 return "Trade Failed: Insufficient funds.";
             }
             newBalance = currentBalance - totalTransactionValue;
-        } else { // SELL
-
+        } else {
             Holding holding = holdingRepo.findBySymbol(request.getSymbol()).orElse(null);
-            if (holding == null || holding.getQuantity() < Math.abs(request.getQuantity())) {
+
+            if (holding == null) {
+                System.out.println("[TRADE WARN] Symbol: " + request.getSymbol() + " | Action: SELL | Reason: No existing holding found.");
+                return "Trade Failed: You do not own this stock.";
+            }
+            if (holding.getQuantity() < Math.abs(request.getQuantity())) {
+                System.out.println("[TRADE WARN] Symbol: " + request.getSymbol() + " | Action: SELL | Reason: Insufficient quantity. Own: " + holding.getQuantity());
                 return "Trade Failed: Not enough shares to sell.";
             }
+
             newBalance = currentBalance + totalTransactionValue;
+            System.out.println("[TRADE INFO] Symbol: " + request.getSymbol() + " | Action: SELL | Status: Validation Passed.");
         }
 
         updateHolding(request);
