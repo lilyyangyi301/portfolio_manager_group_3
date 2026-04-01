@@ -128,6 +128,9 @@ export const DiversificationPanel = () => {
                   fontSize: '12px',
                   color: '#E8F0FB',
                 }}
+                itemStyle={{
+                  color: '#FFFFFF',
+                }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', color: '#8FA2BC' }} />
             </PieChart>
