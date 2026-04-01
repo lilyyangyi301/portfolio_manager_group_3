@@ -12,7 +12,7 @@ public class Finnhub {
 
     private String symbol;      // 股票代码，如 "AAPL"
     private Integer quantity;   // 持有数量
-    private Double avgCost;    // 买入平均成本
+    private Double avgPrice;    // 买入平均成本
 
     // 以下是我们要通过 API 刷新的字段
     private Double currentPrice;  // 当前价

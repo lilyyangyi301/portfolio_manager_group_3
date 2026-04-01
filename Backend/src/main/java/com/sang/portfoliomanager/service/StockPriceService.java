@@ -72,7 +72,7 @@ public class StockPriceService {
 
                 record.setCurrentPrice(latestPrice);
                 record.setMarketValue(record.getQuantity() * latestPrice);
-                record.setTotalProfit((latestPrice - record.getAvgCost()) * record.getQuantity());
+                record.setTotalProfit((latestPrice - record.getAvgPrice()) * record.getQuantity());
                 finnhubRepository.save(record);
 
                 quoteRepo.findById(symbol).ifPresent(quote -> {
@@ -84,7 +84,7 @@ public class StockPriceService {
                 holdingRepo.findBySymbol(symbol).ifPresent(holding -> {
                     holding.setCurrentPrice(latestPrice);
 
-                    holding.setAvgPrice(record.getAvgCost());
+                    holding.setAvgPrice(record.getAvgPrice());
 
                     holdingRepo.save(holding);
                 });

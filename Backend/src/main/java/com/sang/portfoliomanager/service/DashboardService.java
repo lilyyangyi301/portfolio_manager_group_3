@@ -41,7 +41,7 @@ public class DashboardService {
     @Autowired private MarketQuoteRepository quoteRepo;
     @Autowired private SnapshotRepository snapshotRepo;
     @Autowired private WatchlistRepository watchlistRepo;
-        @Autowired private RiskMetricsRepository riskRepo;
+    @Autowired private RiskMetricsRepository riskRepo;
     @Autowired private AccountBalanceRepository balanceRepo;
 
     @Value("${ollama.base-url:http://localhost:11434}")
@@ -421,10 +421,13 @@ public class DashboardService {
                 q.getAvgVolume(), q.getExchange(), q.getDescription()
         );
     }
-        @Transactional
+    @Transactional
     public String executeTrade(TradeRequest request) {
 
-        if ("SELL".equalsIgnoreCase(request.getAction())) {
+        String actionStr = (request.getAction() != null) ? request.getAction().trim() : "";
+        boolean isSell = "SELL".equalsIgnoreCase(actionStr) || "-1".equals(actionStr);
+
+        if (isSell) {
             request.setQuantity(-Math.abs(request.getQuantity()));
         } else {
             request.setQuantity(Math.abs(request.getQuantity()));
@@ -433,39 +436,41 @@ public class DashboardService {
         AccountBalance latestAccount = balanceRepo.findFirstByOrderByIdDesc()
                 .orElseThrow(() -> new RuntimeException("No balance record found"));
 
-        double totalTransactionValue = request.getPrice() * Math.abs(request.getQuantity());
         double currentBalance = latestAccount.getBalance();
+        double totalValue = request.getPrice() * Math.abs(request.getQuantity());
         double newBalance;
 
-        if (request.getQuantity() > 0) { // BUY
-            if (currentBalance < totalTransactionValue) {
+        if (request.getQuantity() > 0) {
+            if (currentBalance < totalValue) {
                 return "Trade Failed: Insufficient funds.";
             }
-            newBalance = currentBalance - totalTransactionValue;
+            newBalance = currentBalance - totalValue;
+            System.out.println(">>> [LOG] BUY validated. New Balance will be: " + (currentBalance - totalValue));
+
         } else {
             Holding holding = holdingRepo.findBySymbol(request.getSymbol()).orElse(null);
 
-            if (holding == null) {
-                System.out.println("[TRADE WARN] Symbol: " + request.getSymbol() + " | Action: SELL | Reason: No existing holding found.");
+            if (holding == null || holding.getQuantity() <= 0) {
+                System.out.println("[INTERCEPTED] No holding found for: " + request.getSymbol());
                 return "Trade Failed: You do not own this stock.";
             }
+
             if (holding.getQuantity() < Math.abs(request.getQuantity())) {
-                System.out.println("[TRADE WARN] Symbol: " + request.getSymbol() + " | Action: SELL | Reason: Insufficient quantity. Own: " + holding.getQuantity());
+                System.out.println("[INTERCEPTED] Insufficient quantity for: " + request.getSymbol());
                 return "Trade Failed: Not enough shares to sell.";
             }
 
-            newBalance = currentBalance + totalTransactionValue;
-            System.out.println("[TRADE INFO] Symbol: " + request.getSymbol() + " | Action: SELL | Status: Validation Passed.");
+            newBalance = currentBalance + totalValue;
+            System.out.println(">>> [LOG] SELL validated. New Balance will be: " + (currentBalance + totalValue));
         }
 
         updateHolding(request);
 
+        AccountBalance newBalanceRecord = new AccountBalance();
+        newBalanceRecord.setBalance(round(newBalance));
+        balanceRepo.save(newBalanceRecord);
 
-        AccountBalance newRecord = new AccountBalance();
-        newRecord.setBalance(round(newBalance));
-        balanceRepo.save(newRecord);
-
-        return "Trade Successful! Current Balance: $" + round(newBalance);
+        return "Trade Successful! Balance: $" + round(newBalance);
     }
     private void updateHolding(TradeRequest req) {
         Holding holding = holdingRepo.findBySymbol(req.getSymbol()).orElse(null);
