@@ -2,6 +2,8 @@ package com.sang.portfoliomanager.service;
 
 import com.sang.portfoliomanager.entity.Finnhub;
 import com.sang.portfoliomanager.repository.FinnhubRepository;
+import com.sang.portfoliomanager.repository.HoldingRepository;
+import com.sang.portfoliomanager.repository.MarketQuoteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,12 @@ public class StockPriceService {
     @Autowired
     private FinnhubRepository finnhubRepository;
 
+    @Autowired
+    private MarketQuoteRepository quoteRepo; // 注入行情仓库
+
+    @Autowired
+    private HoldingRepository holdingRepo;   // 注入持仓仓库
+
     @Value("${finnhub.api.key}")
     private String apiKey;
 
@@ -28,38 +36,13 @@ public class StockPriceService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Transactional
-    public void updateAllPortfolioPrices() {
-        List<Finnhub> records = finnhubRepository.findAll();
-
-        for (Finnhub record : records) {
-            String url = String.format("%s/quote?symbol=%s&token=%s", baseUrl, record.getSymbol(), apiKey);
-
-            try {
-                Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-
-                if (response != null && response.containsKey("c")) {
-                    Double latestPrice = Double.valueOf(response.get("c").toString());
-
-                    record.setCurrentPrice(latestPrice);
-                    record.setMarketValue(record.getQuantity() * latestPrice);
-                    record.setTotalProfit((latestPrice - record.getAvgCost()) * record.getQuantity());
-
-                    finnhubRepository.save(record);
-                }
-            } catch (Exception e) {
-                System.err.println("Failed refresh:: " + record.getSymbol() + " -> " + e.getMessage());
-            }
-        }
-    }
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void scheduledPriceUpdate() {
-        // Formatter for a clean timestamp
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         System.out.println("\n" + "=".repeat(60));
-        System.out.println(">>> [SCHEDULED TASK] Price Refresh Started | Time: " + timestamp);
+        System.out.println(">>> [SCHEDULED TASK] Triple-Table Sync Started | Time: " + timestamp);
 
         List<Finnhub> records = finnhubRepository.findAll();
 
@@ -69,12 +52,11 @@ public class StockPriceService {
 
         for (Finnhub record : records) {
             updateAndLogStock(record);
-
-            // 50ms delay to respect rate limits
+            // Rate limit protection
             try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
         }
 
-        System.out.println(">>> [SCHEDULED TASK] Refresh Completed");
+        System.out.println(">>> [SCHEDULED TASK] Sync Completed");
         System.out.println("=".repeat(60) + "\n");
     }
 
@@ -85,22 +67,33 @@ public class StockPriceService {
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
             if (response != null && response.containsKey("c")) {
-                Double oldPrice = record.getCurrentPrice() != null ? record.getCurrentPrice() : 0.0;
                 Double latestPrice = Double.valueOf(response.get("c").toString());
+                String symbol = record.getSymbol();
 
-                // Update logic
                 record.setCurrentPrice(latestPrice);
                 record.setMarketValue(record.getQuantity() * latestPrice);
                 record.setTotalProfit((latestPrice - record.getAvgCost()) * record.getQuantity());
-
                 finnhubRepository.save(record);
 
-                // English Console Output
-                System.out.printf("[%s] Prev: $%.2f | New: $%.2f | Total Profit: $%.2f%n",
-                        record.getSymbol(), oldPrice, latestPrice, record.getTotalProfit());
+                quoteRepo.findById(symbol).ifPresent(quote -> {
+                    quote.setCurrentPrice(latestPrice);
+
+                    quoteRepo.save(quote);
+                });
+
+                holdingRepo.findBySymbol(symbol).ifPresent(holding -> {
+                    holding.setCurrentPrice(latestPrice);
+
+                    holding.setAvgPrice(record.getAvgCost());
+
+                    holdingRepo.save(holding);
+                });
+
+                System.out.printf("[%s] Sync OK | Price: $%.2f | Profit: $%.2f%n",
+                        symbol, latestPrice, record.getTotalProfit());
             }
         } catch (Exception e) {
-            System.err.println("ERROR: Failed to update " + record.getSymbol() + " -> " + e.getMessage());
+            System.err.println("ERROR: Sync failed for " + record.getSymbol() + " -> " + e.getMessage());
         }
     }
 }

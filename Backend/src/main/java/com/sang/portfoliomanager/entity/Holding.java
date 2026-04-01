@@ -17,4 +17,6 @@ public class Holding {
     private String currency;
     private Double quantity;
     private Double avgPrice;
+    @Column(name = "current_price")
+    private Double currentPrice;
 }

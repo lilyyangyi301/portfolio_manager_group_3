@@ -36,3 +36,4 @@ build/
 
 
 backend/table/
+Backend\src\main\resources\application.properties

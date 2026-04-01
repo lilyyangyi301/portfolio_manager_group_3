@@ -69,6 +69,12 @@ public class DashboardController {
         dashboardService.addToWatchlist(symbol);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/Trade/Balance")
+    public ResponseEntity<AccountBalanceDTO> getCurrentCashBalance() {
+        return ResponseEntity.ok(dashboardService.getCurrentCashBalance());
+    }
+
     @PostMapping("/Trade")
     public ResponseEntity<String> executeTrade(@RequestBody TradeRequest request) {
         String result = dashboardService.executeTrade(request);
@@ -79,7 +85,7 @@ public class DashboardController {
     }
     @PostMapping("/refresh")
     public ResponseEntity<String> refresh() {
-        stockPriceService.updateAllPortfolioPrices();
+        stockPriceService.scheduledPriceUpdate();
         return ResponseEntity.ok("Refresh Completed！");
     }
 }
