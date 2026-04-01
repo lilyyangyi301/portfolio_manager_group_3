@@ -36,6 +36,7 @@ public class DashboardService {
 
     private static final String DEFAULT_SUMMARY = "Local Ollama model is unavailable.";
     private static final String INSUFFICIENT_DATA_SUMMARY = "Insufficient data to generate portfolio risk summary.";
+    private static final String UNCATEGORIZED_LABEL = "Uncategorized";
 
     @Autowired private HoldingRepository holdingRepo;
     @Autowired private MarketQuoteRepository quoteRepo;
@@ -186,19 +187,19 @@ public class DashboardService {
         switch (type.toLowerCase()) {
             case "sectors":
             case "asset-types": // Supports Screenshot 8 and 9
-                groupedMap = holdings.stream().collect(Collectors.groupingBy(Holding::getSector));
+                groupedMap = holdings.stream().collect(Collectors.groupingBy(h -> safeGroupingKey(h.getSector())));
                 break;
             case "currency": // Supports Screenshot 10
-                groupedMap = holdings.stream().collect(Collectors.groupingBy(Holding::getCurrency));
+                groupedMap = holdings.stream().collect(Collectors.groupingBy(h -> safeGroupingKey(h.getCurrency())));
                 break;
             default: // Defaults to Screenshot 7 (Stocks, Crypto, ETFs, Bonds)
-                groupedMap = holdings.stream().collect(Collectors.groupingBy(Holding::getAssetType));
+                groupedMap = holdings.stream().collect(Collectors.groupingBy(h -> safeGroupingKey(h.getAssetType())));
                 break;
         }
 
         // 3. Calculate the absolute total value of the entire portfolio for percentage calculation
         double portfolioGrandTotal = holdings.stream()
-                .mapToDouble(h -> h.getQuantity() * quoteMap.get(h.getSymbol()).getCurrentPrice())
+                .mapToDouble(h -> getHoldingMarketValue(h, quoteMap))
                 .sum();
 
         // 4. Transform grouped data into DTOs
@@ -207,7 +208,7 @@ public class DashboardService {
             double categoryGain = 0;
 
             for (Holding h : entry.getValue()) {
-                double currentPrice = quoteMap.get(h.getSymbol()).getCurrentPrice();
+                double currentPrice = getCurrentPrice(h, quoteMap);
                 categoryValue += h.getQuantity() * currentPrice;
                 categoryGain += (currentPrice - h.getAvgPrice()) * h.getQuantity();
             }
@@ -216,13 +217,33 @@ public class DashboardService {
             double weight = (portfolioGrandTotal > 0) ? (categoryValue / portfolioGrandTotal) * 100 : 0;
             String formattedName = formatCategoryName(entry.getKey());
             return new DistributionDTO(
-                    entry.getKey(),     // The category name from groupingBy
+                    formattedName,      // The category name from groupingBy
                     categoryValue,      // Summed value
                     weight,             // Calculated percentage
                     categoryGain        // Summed gain
             );
         }).collect(Collectors.toList());
     }
+
+    private String safeGroupingKey(String value) {
+        if (value == null || value.isBlank()) {
+            return UNCATEGORIZED_LABEL;
+        }
+        return value.trim();
+    }
+
+    private double getHoldingMarketValue(Holding holding, Map<String, MarketQuote> quoteMap) {
+        return holding.getQuantity() * getCurrentPrice(holding, quoteMap);
+    }
+
+    private double getCurrentPrice(Holding holding, Map<String, MarketQuote> quoteMap) {
+        MarketQuote quote = quoteMap.get(holding.getSymbol());
+        if (quote != null && quote.getCurrentPrice() != null) {
+            return quote.getCurrentPrice();
+        }
+        return holding.getCurrentPrice() != null ? holding.getCurrentPrice() : 0.0;
+    }
+
     private String formatCategoryName(String name) {
         if (name == null || name.isEmpty()) return name;
         if (name.equalsIgnoreCase("ETF")) return "ETFs";
