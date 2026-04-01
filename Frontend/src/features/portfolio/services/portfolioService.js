@@ -8,3 +8,5 @@ export const getPotentialData = () => api.get('/api/v1/dashboard/MeasurePotentia
 
 export const getDiversificationData = (type) =>
   api.get(`/api/v1/dashboard/ManageDiversification/${type}`);
+
+export const getBalanceData = () => api.get('/api/v1/dashboard/Trade/Balance');

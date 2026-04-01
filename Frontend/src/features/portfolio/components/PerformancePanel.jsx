@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useEffect, useState, useMemo } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceDot } from 'recharts';
 import { getPerformanceData } from '../services/portfolioService';
 
 export const PerformancePanel = () => {
@@ -9,6 +9,38 @@ export const PerformancePanel = () => {
   const [periods, setPeriods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const targetPointDetails = useMemo(() => {
+    if (!history.length || selectedPeriod === 'All time') return null;
+    
+    // Assuming history is sorted oldest to newest
+    const now = new Date(history[history.length - 1].date);
+    let targetDate = new Date(now);
+
+    switch (selectedPeriod) {
+      case '1 month': targetDate.setMonth(now.getMonth() - 1); break;
+      case '3 month': targetDate.setMonth(now.getMonth() - 3); break;
+      case '6 month': targetDate.setMonth(now.getMonth() - 6); break;
+      case 'YTD': targetDate = new Date(now.getFullYear(), 0, 1); break;
+      case '1 year': targetDate.setFullYear(now.getFullYear() - 1); break;
+      default: return null;
+    }
+
+    const targetTime = targetDate.getTime();
+    let bestIndex = -1;
+    let minDiff = Infinity;
+
+    // Find the closest data point to the target date
+    for (let i = 0; i < history.length; i++) {
+      const diff = Math.abs(new Date(history[i].date).getTime() - targetTime);
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestIndex = i;
+      }
+    }
+    
+    return bestIndex !== -1 ? history[bestIndex] : null;
+  }, [history, selectedPeriod]);
 
   // Fetch data on mount
   useEffect(() => {
@@ -111,8 +143,20 @@ export const PerformancePanel = () => {
                 stroke="#3B82F6"
                 strokeWidth={3}
                 dot={false}
+                activeDot={{ r: 6, fill: "#5FA8FF", stroke: "#101927", strokeWidth: 2 }}
                 isAnimationActive={true}
               />
+              {targetPointDetails && (
+                <ReferenceDot
+                  x={targetPointDetails.date}
+                  y={targetPointDetails[chartType === 'value' ? 'value' : 'performance']}
+                  r={6}
+                  fill="#0F1726"
+                  stroke="#5FA8FF"
+                  strokeWidth={3}
+                  label={{ position: 'top', value: selectedPeriod, fill: '#8FA2BC', fontSize: 11, dy: -10 }}
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>

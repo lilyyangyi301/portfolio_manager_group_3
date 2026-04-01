@@ -1,11 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
+import { getBalanceData } from '../../features/portfolio/services/portfolioService';
+import { executeTrade } from '../../features/stock/services/stockService';
 
 export const TransactionModal = ({ stock, onClose }) => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
   const [transactionType, setTransactionType] = useState(null);
+  const [currentBalance, setCurrentBalance] = useState(null);
+  const [balanceLoading, setBalanceLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchBalance = async () => {
+      try {
+        const data = await getBalanceData();
+        if (isMounted) {
+          const balance = data?.account_balance ?? data?.accountBalance ?? data?.balance ?? data?.amount ?? (typeof data === 'number' ? data : 0);
+          setCurrentBalance(Number(balance));
+        }
+      } catch (error) {
+        if (isMounted) setCurrentBalance(0);
+      } finally {
+        if (isMounted) setBalanceLoading(false);
+      }
+    };
+    fetchBalance();
+    return () => { isMounted = false; };
+  }, []);
 
   // fallback to generic price if not easily resolvable from mocked data
   const price = stock.currentPrice || stock.price || 0;
@@ -13,24 +38,67 @@ export const TransactionModal = ({ stock, onClose }) => {
   const priceChange = stock.priceChangePercent ?? stock.changePercent ?? 0;
   const isPositive = priceChange >= 0;
 
+  const postTradeBalance = currentBalance !== null 
+    ? (transactionType === 'buy' ? currentBalance - parseFloat(totalValue) : currentBalance + parseFloat(totalValue))
+    : null;
+
   const handleInitiateTransaction = (type) => {
     if (quantity <= 0) return;
     setTransactionType(type);
     setStatus('confirm');
   };
 
-  const handleTransaction = () => {
+  const handleTransaction = async () => {
     if (quantity <= 0) return;
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setStatus('success');
+    if (transactionType === 'buy' && currentBalance !== null && currentBalance - parseFloat(totalValue) < 0) {
+      setErrorMessage("Insufficient Funds: Your account balance will fall below $0.00 after this trade.");
+      setStatus('error');
+      return;
+    }
 
+    setLoading(true);
+    
+    const tradeQuantity = transactionType === 'buy' ? Number(quantity) : -Number(quantity);
+    const finalAssetType = stock.assetType || 'STOCKS';
+    const finalSector = stock.sector || 'Unknown';
+    const actionStr = transactionType === 'buy' ? '1' : '-1';
+    
+    try {
+      const response = await executeTrade({
+        symbol: stock.symbol || stock.ticker,
+        quantity: tradeQuantity,
+        price: Number(price),
+        assetType: finalAssetType,
+        sector: finalSector,
+        action: actionStr
+      });
+      
+      if (typeof response === 'string') {
+        setSuccessMessage(response);
+      } else {
+        setSuccessMessage(`Your order for ${quantity} share(s) has been successfully executed.`);
+      }
+      
+      setStatus('success');
       setTimeout(() => {
         onClose();
       }, 1500);
-    }, 1000);
+    } catch (error) {
+      console.error('Trade failed:', error);
+      let backendMsg = '';
+      if (error.response?.data) {
+        backendMsg = typeof error.response.data === 'string' ? error.response.data : (error.response.data.message || '');
+      }
+      
+      if (transactionType === 'sell') {
+        setErrorMessage(backendMsg || "Transaction Failed: You do not hold enough shares of this stock to complete the sale.");
+      } else {
+        setErrorMessage(backendMsg || "Trade execution failed. Please check the backend server.");
+      }
+      setStatus('error');
+      setLoading(false);
+    }
   };
 
   if (!stock) return null;
@@ -60,7 +128,21 @@ export const TransactionModal = ({ stock, onClose }) => {
               <TrendingUp size={32} />
             </div>
             <h3 className="text-xl font-bold text-[#E8F0FB]">Transaction Complete</h3>
-            <p className="text-[#8FA2BC]">Your order for {quantity} share(s) has been successfully executed.</p>
+            <p className="text-[#8FA2BC]">{successMessage}</p>
+          </div>
+        ) : status === 'error' ? (
+          <div className="p-12 flex flex-col items-center justify-center gap-4 text-center">
+            <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border border-[#C84F5A] bg-[rgba(200,79,90,0.12)] text-[#C84F5A]">
+              <X size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-[#FF6B6B]">Transaction Failed</h3>
+            <p className="text-[#8FA2BC]">{errorMessage}</p>
+            <button
+               onClick={() => setStatus('idle')}
+               className="mt-6 rounded-xl bg-[#1C2940] px-6 py-2 font-bold text-[#E8F0FB] hover:bg-[#23314A] transition-colors"
+            >
+               Try Again
+            </button>
           </div>
         ) : status === 'confirm' ? (
           <div className="p-6">
@@ -85,6 +167,18 @@ export const TransactionModal = ({ stock, onClose }) => {
                 <div className="mb-3 flex flex-row justify-between items-center">
                   <span>Price at Market</span>
                   <span className="font-bold text-[#F3F8FF]">${price.toFixed(2)}</span>
+                </div>
+                <div className="mb-3 flex flex-row justify-between items-center">
+                    <span>Current Balance</span>
+                    <span className="font-bold text-[#F3F8FF]">
+                      {balanceLoading ? '...' : currentBalance !== null ? `$${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A'}
+                    </span>
+                </div>
+                <div className="mb-3 flex flex-row justify-between items-center">
+                    <span>Post-Trade Balance</span>
+                    <span className={`font-bold ${transactionType === 'buy' ? 'text-[#C84F5A]' : 'text-[#1F9A6A]'}`}>
+                      {balanceLoading ? '...' : postTradeBalance !== null ? `$${postTradeBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A'}
+                    </span>
                 </div>
                 <div className="mt-4 border-t border-[#1C2940] pt-4 flex flex-row justify-between items-center gap-4">
                     <span className="font-semibold text-[#8FA2BC]">Estimated Total</span>
