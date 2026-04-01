@@ -332,6 +332,13 @@ public class DashboardService {
         return Math.round(value * 100.0) / 100.0;
     }
 
+    public AccountBalanceDTO getCurrentCashBalance() {
+        double balance = balanceRepo.findFirstByOrderByIdDesc()
+                .map(AccountBalance::getBalance)
+                .orElse(0.0);
+        return new AccountBalanceDTO(round(balance));
+    }
+
     //Watchlist
     public List<WatchlistDTO> getWatchlistData() {
         List<Watchlist> watchlist = watchlistRepo.findAll();
