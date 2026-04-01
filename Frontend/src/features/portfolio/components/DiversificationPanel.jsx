@@ -2,7 +2,36 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { getDiversificationData } from '../services/portfolioService';
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
+const COLORS = [
+  '#3B82F6', // blue
+  '#10B981', // green
+  '#F59E0B', // yellow
+  '#EF4444', // red
+  '#8B5CF6', // purple
+  '#EC4899', // pink
+  '#14B8A6', // teal
+  '#F97316', // orange
+
+  // 新增（同一色系延展）
+  '#6366F1', // indigo
+  '#22C55E', // brighter green
+  '#EAB308', // amber
+  '#DC2626', // deep red
+  '#A855F7', // vivid purple
+  '#F43F5E', // rose
+  '#06B6D4', // cyan
+  '#FB923C', // soft orange
+
+  // 再补一组（更柔和/次级）
+  '#60A5FA', // light blue
+  '#34D399', // mint green
+  '#FCD34D', // light yellow
+  '#F87171', // soft red
+  '#C084FC', // light purple
+  '#F9A8D4', // light pink
+  '#5EEAD4', // light teal
+  '#FDBA74', // light orange
+];
 
 const TAB_CONFIG = [
   { label: 'Assets', type: 'assets' },
