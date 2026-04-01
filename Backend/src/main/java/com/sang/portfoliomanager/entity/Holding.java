@@ -9,12 +9,12 @@ import lombok.Data;
 public class Holding {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Unique identifier for the holding
+    private Long id;
     private String symbol;
     private String name;
     private String assetType;
-    private String sector; 
-    private String currency; //
+    private String sector;
+    private String currency;
     private Double quantity;
-    private Double avgPrice; 
+    private Double avgPrice;
 }
