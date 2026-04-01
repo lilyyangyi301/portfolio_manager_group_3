@@ -1,8 +1,10 @@
 import api from '../../../api/axios';
 import { mockData } from '../../../data/mockData';
 
-const STOCKS_ENDPOINT = '/api/v1/stocks';
-const WATCHLIST_ENDPOINT = '/api/v1/watchlist';
+const STOCKS_ENDPOINT = '/api/v1/dashboard/StockFinder/AllStocks';
+const STOCK_SEARCH_ENDPOINT = '/api/v1/dashboard/StockFinder/SearchForTickerOrCompanyname';
+const WATCHLIST_ENDPOINT = '/api/v1/dashboard/Watchlist';
+const WATCHLIST_ALL_ENDPOINT = '/api/v1/dashboard/Watchlist/AllStocks';
 
 const parseAbbreviatedNumber = (value) => {
   if (typeof value === 'number') return value;
@@ -84,7 +86,7 @@ export const getAllStocks = async () => {
 
 export const getInitialWatchlist = async () => {
   try {
-    const data = await api.get(WATCHLIST_ENDPOINT);
+    const data = await api.get(WATCHLIST_ALL_ENDPOINT);
     return Array.isArray(data) ? data.map(normalizeStock) : [];
   } catch (error) {
     return getMockStocks().slice(0, 3);
@@ -117,18 +119,27 @@ export const subscribeToPriceUpdates = (tickers, callback) => {
 };
 
 export const searchTicker = async (query) => {
-  const allStocks = await getAllStocks();
-
   if (!query || query.trim() === '') {
-    return allStocks;
+    return getAllStocks();
   }
 
-  const lowerQuery = query.toLowerCase();
-  return allStocks.filter(
-    (stock) =>
-      stock.symbol.toLowerCase().includes(lowerQuery) ||
-      stock.companyName.toLowerCase().includes(lowerQuery),
-  );
+  try {
+    const data = await api.get(STOCK_SEARCH_ENDPOINT, {
+      params: {
+        q: query,
+        keyword: query,
+      },
+    });
+    return Array.isArray(data) ? data.map(normalizeStock) : [];
+  } catch (error) {
+    const allStocks = await getAllStocks();
+    const lowerQuery = query.toLowerCase();
+    return allStocks.filter(
+      (stock) =>
+        stock.symbol.toLowerCase().includes(lowerQuery) ||
+        stock.companyName.toLowerCase().includes(lowerQuery),
+    );
+  }
 };
 
 export const getStockPrice = async (ticker) => {
