@@ -10,9 +10,6 @@ public class RiskAssessmentDTO {
     private Double beta;
     private Double sharpeRatio;
     private Double sortinoRatio;
-    private String betaStatus;
-    private String sharpeStatus;
-    private String sortinoStatus;
 
     @Column(columnDefinition = "TEXT")
     private String riskSummary;

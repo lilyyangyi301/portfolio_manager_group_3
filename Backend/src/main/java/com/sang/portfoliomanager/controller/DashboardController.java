@@ -2,6 +2,7 @@ package com.sang.portfoliomanager.controller;
 
 import com.sang.portfoliomanager.dto.*;
 import com.sang.portfoliomanager.service.DashboardService;
+import com.sang.portfoliomanager.service.StockPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,8 @@ import java.util.List;
 public class DashboardController {
     @Autowired
     private DashboardService dashboardService;
+    @Autowired
+    private StockPriceService stockPriceService;
 
     @GetMapping("/StartInSeconds")
     public ResponseEntity<DashboardSummaryDTO> getSummary() {
@@ -73,5 +76,10 @@ public class DashboardController {
             return ResponseEntity.badRequest().body(result);
         }
         return ResponseEntity.ok(result);
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<String> refresh() {
+        stockPriceService.updateAllPortfolioPrices();
+        return ResponseEntity.ok("Refresh Completed！");
     }
 }
