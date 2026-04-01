@@ -5,12 +5,19 @@ export const TransactionModal = ({ stock, onClose }) => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
+  const [transactionType, setTransactionType] = useState(null);
 
   // fallback to generic price if not easily resolvable from mocked data
   const price = stock.currentPrice || stock.price || 0;
   const totalValue = (price * quantity).toFixed(2);
   const priceChange = stock.priceChangePercent ?? stock.changePercent ?? 0;
   const isPositive = priceChange >= 0;
+
+  const handleInitiateTransaction = (type) => {
+    if (quantity <= 0) return;
+    setTransactionType(type);
+    setStatus('confirm');
+  };
 
   const handleTransaction = () => {
     if (quantity <= 0) return;
@@ -55,6 +62,60 @@ export const TransactionModal = ({ stock, onClose }) => {
             <h3 className="text-xl font-bold text-[#E8F0FB]">Transaction Complete</h3>
             <p className="text-[#8FA2BC]">Your order for {quantity} share(s) has been successfully executed.</p>
           </div>
+        ) : status === 'confirm' ? (
+          <div className="p-6">
+            <h3 className="mb-4 text-xl font-bold text-[#E8F0FB]">
+              Confirm {transactionType === 'buy' ? 'Purchase' : 'Sale'}
+            </h3>
+            <div className="mb-8 rounded-xl border border-[#1C2940] bg-[#0F1726] p-5 text-[#8FA2BC] shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]">
+                <div className="mb-3 flex flex-row justify-between items-center pb-3 border-b border-[#1C2940]">
+                  <span>Action</span>
+                  <span className={`font-bold uppercase tracking-[0.1em] text-sm ${transactionType === 'buy' ? 'text-[#1F9A6A]' : 'text-[#C84F5A]'}`}>
+                    {transactionType === 'buy' ? 'Buy' : 'Sell'}
+                  </span>
+                </div>
+                <div className="mb-3 flex flex-row justify-between items-center">
+                  <span>Stock</span>
+                  <span className="font-bold text-[#F3F8FF]">{stock.symbol || stock.ticker}</span>
+                </div>
+                <div className="mb-3 flex flex-row justify-between items-center">
+                  <span>Shares</span>
+                  <span className="font-bold text-[#F3F8FF]">{quantity}</span>
+                </div>
+                <div className="mb-3 flex flex-row justify-between items-center">
+                  <span>Price at Market</span>
+                  <span className="font-bold text-[#F3F8FF]">${price.toFixed(2)}</span>
+                </div>
+                <div className="mt-4 border-t border-[#1C2940] pt-4 flex flex-row justify-between items-center gap-4">
+                    <span className="font-semibold text-[#8FA2BC]">Estimated Total</span>
+                    <span className="text-2xl font-bold text-[#F3F8FF]">${totalValue}</span>
+                </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <button
+                onClick={() => setStatus('idle')}
+                disabled={loading}
+                className="flex flex-1 items-center justify-center rounded-xl border border-[#1C2940] bg-transparent py-3 text-lg font-bold text-[#8FA2BC] transition-colors hover:bg-[#1C2940] hover:text-[#E8F0FB] disabled:opacity-50"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleTransaction}
+                disabled={loading}
+                className={`flex flex-1 items-center justify-center rounded-xl py-3 text-lg font-bold text-[#F3F8FF] transition-colors disabled:opacity-50 ${transactionType === 'buy' ? 'bg-[#1F9A6A] hover:bg-[#28B77F] shadow-[0_0_20px_rgba(31,154,106,0.3)]' : 'bg-[#C84F5A] hover:bg-[#E1626E] shadow-[0_0_20px_rgba(200,79,90,0.3)]'}`}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#F3F8FF] border-t-transparent"></span>
+                    Processing
+                  </span>
+                ) : (
+                  'Confirm Order'
+                )}
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="p-6">
             <div className="flex items-end justify-between mb-8">
@@ -95,18 +156,18 @@ export const TransactionModal = ({ stock, onClose }) => {
 
             <div className="flex gap-4">
               <button
-                onClick={handleTransaction}
+                onClick={() => handleInitiateTransaction('buy')}
                 disabled={loading || !quantity}
                 className="flex flex-1 items-center justify-center rounded-xl bg-[#1F9A6A] py-3 text-lg font-bold text-[#F3F8FF] hover:bg-[#28B77F] disabled:opacity-50"
               >
-                {loading ? 'Processing...' : 'Buy'}
+                Buy
               </button>
               <button
-                onClick={handleTransaction}
+                onClick={() => handleInitiateTransaction('sell')}
                 disabled={loading || !quantity}
                 className="flex flex-1 items-center justify-center rounded-xl bg-[#C84F5A] py-3 text-lg font-bold text-[#F3F8FF] hover:bg-[#E1626E] disabled:opacity-50"
               >
-                {loading ? <TrendingDown size={18} className="animate-pulse" /> : 'Sell'}
+                Sell
               </button>
             </div>
           </div>
