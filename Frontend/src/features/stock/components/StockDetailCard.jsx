@@ -36,7 +36,7 @@ export const StockDetailCard = ({
     { label: 'Dividend Yield', value: `${stock.dividendYield.toFixed(2)}%` },
     { label: '52-Week High', value: `$${stock.weekHigh52.toFixed(2)}` },
     { label: '52-Week Low', value: `$${stock.weekLow52.toFixed(2)}` },
-    { label: 'Avg Volume', value: (stock.volume / 1000000).toFixed(1) + 'M' },
+    { label: 'Average Volume', value: (stock.volume / 1000000).toFixed(1) + 'M' },
   ];
 
   return (
