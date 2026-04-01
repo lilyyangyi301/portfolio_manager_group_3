@@ -13,3 +13,5 @@ export const getRiskAssessment = () =>
   api.get('/api/v1/dashboard/RiskAssessment', {
     timeout: 15000,
   });
+
+export const getBalanceData = () => api.get('/api/v1/dashboard/Trade/Balance');
