@@ -87,6 +87,7 @@ export const PotentialPanel = () => {
             <XAxis type="number" stroke="#6F86A6" style={{ fontSize: '11px' }} />
             <YAxis dataKey="symbol" type="category" stroke="#6F86A6" style={{ fontSize: '11px' }} />
             <Tooltip
+              cursor={{ fill: 'transparent' }}
               contentStyle={{
                 backgroundColor: '#0F1726',
                 border: '1px solid #22314A',
