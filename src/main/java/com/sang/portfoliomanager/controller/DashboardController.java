@@ -38,32 +38,4 @@ public class DashboardController {
         // This replaces the previous static database read with real calculation logic
         return ResponseEntity.ok(dashboardService.getRiskAssessment());
     }
-
-    // GET all watchlist items
-    @GetMapping("/Watchlist/AllStocks")
-    public ResponseEntity<List<WatchlistDTO>> getWatchlist() {
-        return ResponseEntity.ok(dashboardService.getWatchlistData());
-    }
-
-    // DELETE a specific item by symbol
-    @DeleteMapping("/Watchlist/{symbol}")
-    public ResponseEntity<Void> deleteFromWatchlist(@PathVariable String symbol) {
-        dashboardService.removeFromWatchlist(symbol);
-        return ResponseEntity.noContent().build();
-    }
-    @GetMapping("/StockFinder/SearchForTickerOrCompanyname")
-    public ResponseEntity<List<StockDetailDTO>> searchStocks(@RequestParam String query) {
-        return ResponseEntity.ok(dashboardService.searchStocks(query));
-    }
-
-    @GetMapping("/StockFinder/AllStocks")
-    public ResponseEntity<List<StockDetailDTO>> getAllStocks() {
-        return ResponseEntity.ok(dashboardService.getAllStockDetails());
-    }
-
-    @PostMapping("/Watchlist/{symbol}")
-    public ResponseEntity<Void> addToWatchlist(@PathVariable String symbol) {
-        dashboardService.addToWatchlist(symbol);
-        return ResponseEntity.ok().build();
-    }
 }

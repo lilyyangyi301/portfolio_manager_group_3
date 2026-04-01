@@ -3,7 +3,6 @@ package com.sang.portfoliomanager.service;
 import com.sang.portfoliomanager.dto.*;
 import com.sang.portfoliomanager.entity.*;
 import com.sang.portfoliomanager.repository.*;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +20,6 @@ public class DashboardService {
     @Autowired private HoldingRepository holdingRepo;
     @Autowired private MarketQuoteRepository quoteRepo;
     @Autowired private SnapshotRepository snapshotRepo;
-    @Autowired private WatchlistRepository watchlistRepo;
     @Autowired private RiskMetricsRepository riskRepo;
 
     //StartInSeconds
@@ -271,86 +268,4 @@ public ControlViewDTO getControlPerformanceData() {
         return Math.round(value * 100.0) / 100.0;
     }
 
-    //Watchlist
-    public List<WatchlistDTO> getWatchlistData() {
-        List<Watchlist> watchlist = watchlistRepo.findAll();
-        Map<String, MarketQuote> quoteMap = quoteRepo.findAll().stream()
-                .collect(Collectors.toMap(MarketQuote::getSymbol, q -> q));
-
-        Random random = new Random();
-
-        return watchlist.stream().map(w -> {
-            MarketQuote q = quoteMap.get(w.getSymbol());
-
-            // Base data from DB
-            double price = (q != null) ? q.getCurrentPrice() : 100.0;
-            String name = (q != null) ? q.getCompanyName() : "Unknown Corp";
-
-            // Simulation Logic: Generate random fluctuations (both positive and negative)
-            // Gaussian distribution centered at 0 ensures ~50% up and ~50% down
-            double volatility = 0.02; // 2% standard deviation
-            double simulatedChangePct = random.nextGaussian() * volatility * 100;
-            double changeAmount = price * (simulatedChangePct / 100);
-
-            return new WatchlistDTO(
-                    w.getSymbol(),
-                    name,
-                    price + changeAmount, // Price after fluctuation
-                    changeAmount,
-                    simulatedChangePct
-            );
-        }).collect(Collectors.toList());
-    }
-
-    /**
-     * Removes a stock from the watchlist.
-     */
-    @Transactional
-    public void removeFromWatchlist(String symbol) {
-        watchlistRepo.deleteBySymbol(symbol);
-    }
-
-    /**
-     * Search stocks by symbol or company name for Stock Finder.
-     */
-    public List<StockDetailDTO> searchStocks(String query) {
-        List<MarketQuote> results = quoteRepo.findBySymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCase(query, query);
-
-        return results.stream()
-                .map(this::convertToDetailDTO)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get full details of a single stock.
-     */
-    public List<StockDetailDTO> getAllStockDetails() {
-        List<MarketQuote> allQuotes = quoteRepo.findAll();
-
-        return allQuotes.stream()
-                .map(this::convertToDetailDTO)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Add a stock to the user's watchlist.
-     */
-    @Transactional
-    public void addToWatchlist(String symbol) {
-        if (!watchlistRepo.findAll().stream().anyMatch(w -> w.getSymbol().equals(symbol))) {
-            Watchlist newItem = new Watchlist();
-            newItem.setSymbol(symbol);
-            watchlistRepo.save(newItem);
-        }
-    }
-
-    // Helper method to map Entity to DTO
-    private StockDetailDTO convertToDetailDTO(MarketQuote q) {
-        return new StockDetailDTO(
-                q.getSymbol(), q.getCompanyName(), q.getCurrentPrice(), q.getChangePct(),
-                q.getSector(), q.getIndustry(), q.getMarketCap(), q.getPeRatio(),
-                q.getDividendYield(), q.getWeek52High(), q.getWeek52Low(),
-                q.getAvgVolume(), q.getExchange(), q.getDescription()
-        );
-    }
 }
