@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FeatureMenu } from './FeatureMenu';
 import { PortfolioOverviewPanel } from './PortfolioOverviewPanel';
 import { PerformancePanel } from './PerformancePanel';
 import { PotentialPanel } from './PotentialPanel';
 import { DiversificationPanel } from './DiversificationPanel';
 import { RiskPanel } from './RiskPanel';
-import { mockData } from '../data/mockData';
-
 const PANELS = [
   PortfolioOverviewPanel,
   PerformancePanel,
@@ -21,15 +19,17 @@ export const FeatureShowcase = () => {
   const ActivePanel = PANELS[activeFeature - 1];
 
   return (
-    <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="card p-8 lg:p-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Menu */}
+    <div className="dashboard-shell">
+      <div className="dashboard-sidebar">
+        <div className="dashboard-nav-card">
           <div className="lg:col-span-1">
             <FeatureMenu activeFeature={activeFeature} onSelectFeature={setActiveFeature} />
           </div>
+        </div>
+      </div>
 
-          {/* Right Content */}
+      <div className="dashboard-stage">
+        <div className="dashboard-panel-frame">
           <div className="lg:col-span-2">
             <ActivePanel />
           </div>

@@ -12,7 +12,7 @@ export const WatchlistButton = ({
   const handleClick = (e) => {
     e.stopPropagation();
     if (isLoading) return;
-    
+
     if (isInWatchlist && onRemoveFromWatchlist) {
       onRemoveFromWatchlist(stock);
     } else if (!isInWatchlist && onAddToWatchlist) {
@@ -35,7 +35,7 @@ export const WatchlistButton = ({
       }`}
     >
       <Star size={16} fill={isInWatchlist ? 'currentColor' : 'none'} className="group-hover:hidden" />
-      <span className="hidden group-hover:block transition-all">✖</span>
+      {/* <span className="hidden group-hover:block transition-all">Done</span> */}
       {isLoading ? 'Processing...' : isInWatchlist ? <span className="group-hover:hidden">In Watchlist</span> : 'Add to Watchlist'}
       {isInWatchlist && !isLoading && <span className="hidden group-hover:block">Remove</span>}
     </button>

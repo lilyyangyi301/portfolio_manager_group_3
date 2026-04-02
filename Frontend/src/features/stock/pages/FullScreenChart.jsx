@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createChart, ColorType } from 'lightweight-charts';
+import { createChart, CandlestickSeries } from 'lightweight-charts';
 import { ArrowLeft, Moon, Sun, TrendingUp, TrendingDown } from 'lucide-react';
 import { getStockPrice, getOHLCData } from '../services/stockService';
 
@@ -12,7 +12,7 @@ export const FullScreenChart = () => {
   const [stock, setStock] = useState(null);
   const [ohlcData, setOhlcData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
 
   const isPositive = stock?.changePercent >= 0;
 
@@ -60,7 +60,7 @@ export const FullScreenChart = () => {
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: backgroundColor },
+        background: { type: 'solid', color: backgroundColor },
         textColor: textColor,
       },
       grid: {
@@ -76,7 +76,7 @@ export const FullScreenChart = () => {
       autoSize: true, 
     });
 
-    const candlestickSeries = chart.addCandlestickSeries({
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#10B981', 
       downColor: '#EF4444', 
       borderVisible: false,
@@ -131,11 +131,11 @@ export const FullScreenChart = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors text-sm font-medium ${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-secondary hover:bg-white bg-white shadow-sm'}`}
+              onClick={() => navigate('/', { state: { activeTab: 'stock-finder' } })}
+              className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-base font-semibold transition-colors ${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-secondary hover:bg-white bg-white shadow-sm'}`}
             >
-              <ArrowLeft size={16} />
-              Dashboard
+              <ArrowLeft size={18} />
+              Stock Finder
             </button>
             
             <div className={`h-8 w-px ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>

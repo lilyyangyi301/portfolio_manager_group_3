@@ -1,7 +1,7 @@
 import React from 'react';
-import { WatchlistButton } from './WatchlistButton';
 import { Link } from 'react-router-dom';
 import { ArrowRightLeft, Maximize2 } from 'lucide-react';
+import { WatchlistButton } from '../../watchlist/components/WatchlistButton';
 
 export const StockDetailCard = ({
   stock,
@@ -9,7 +9,7 @@ export const StockDetailCard = ({
   onRemoveFromWatchlist,
   isInWatchlist,
   isLoading,
-  onTransactionClick
+  onTransactionClick,
 }) => {
   const formatNumber = (num) => {
     if (num >= 1000000000) {
@@ -40,13 +40,12 @@ export const StockDetailCard = ({
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-6 sticky top-0">
-      {/* Header */}
-      <div className="mb-6 pb-6 border-b border-gray-100">
-        <h4 className="text-lg font-bold text-primary mb-1">{stock.symbol}</h4>
-        <p className="text-sm text-secondary mb-4">{stock.companyName}</p>
+    <div className="terminal-surface sticky top-0 rounded-[22px] p-6">
+      <div className="mb-6 border-b border-[#1C2940] pb-6">
+        <h4 className="mb-1 text-lg font-semibold tracking-[0.16em] text-[#E8F0FB]">{stock.symbol}</h4>
+        <p className="mb-4 text-sm text-[#8FA2BC]">{stock.companyName}</p>
         <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-2xl font-bold text-primary">
+          <span className="text-2xl font-bold text-[#F3F8FF]">
             ${stock.currentPrice.toFixed(2)}
           </span>
           <span
@@ -58,21 +57,20 @@ export const StockDetailCard = ({
             {stock.priceChangePercent.toFixed(2)}%
           </span>
         </div>
-        <p className="text-xs text-secondary leading-relaxed">{stock.description}</p>
+        <p className="text-xs leading-relaxed text-[#8FA2BC]">{stock.description}</p>
       </div>
 
-      {/* Details Grid */}
       <div className="space-y-3 mb-6">
         {detailItems.map((item, idx) => (
-          <div key={idx} className="flex justify-between items-start">
-            <span className="text-xs text-secondary font-medium">{item.label}</span>
+          <div key={idx} className="flex items-start justify-between gap-4 rounded-xl border border-[#162133] bg-[#0F1726] px-3 py-2.5">
+            <span className="text-xs font-medium uppercase tracking-[0.12em] text-[#6F86A6]">{item.label}</span>
             <span
-              className={`text-xs font-semibold text-right ${
+              className={`text-right text-xs font-semibold ${
                 item.positive !== undefined
                   ? item.positive
                     ? 'text-positive'
                     : 'text-negative'
-                  : 'text-primary'
+                  : 'text-[#E8F0FB]'
               }`}
             >
               {item.value}
@@ -82,7 +80,6 @@ export const StockDetailCard = ({
       </div>
 
       <div className="flex flex-col gap-4">
-        {/* Add/Remove from Watchlist Button */}
         <WatchlistButton
           stock={stock}
           onAddToWatchlist={onAddToWatchlist}
@@ -92,18 +89,17 @@ export const StockDetailCard = ({
           fullWidth
         />
 
-        {/* Actions Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <Link 
+          <Link
             to={`/chart/${stock.symbol}`}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-primary hover:bg-gray-50 transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#23314A] bg-[#0F1726] py-2.5 text-sm font-semibold text-[#DCE7F5] hover:border-[#385173] hover:bg-[#121C2D]"
           >
             <Maximize2 size={16} />
             Full Chart
           </Link>
           <button
             onClick={() => onTransactionClick?.()}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#5FA8FF] py-2.5 text-sm font-semibold text-[#09111D] hover:bg-[#7BB8FF]"
           >
             <ArrowRightLeft size={16} />
             Trade
