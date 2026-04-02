@@ -1,8 +1,95 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { mockData } from '../../../data/mockData';
+import { getRiskAssessment } from '../services/portfolioService';
+
+const getBetaComment = (value) => {
+  if (value < 0.8) return 'Lower volatility than market';
+  if (value < 1.05) return 'In line with market volatility';
+  if (value < 1.3) return 'Slightly more volatile than market';
+  if (value < 1.6) return 'More volatile than market';
+  return 'High volatility relative to market';
+};
+
+const getSharpeComment = (value) => {
+  if (value < 0) return 'Negative risk-adjusted returns';
+  if (value < 1) return 'Weak risk-adjusted returns';
+  if (value < 2) return 'Good risk-adjusted returns';
+  if (value < 3) return 'Very strong risk-adjusted returns';
+  return 'Exceptional risk-adjusted returns';
+};
+
+const getSortinoComment = (value) => {
+  if (value < 0) return 'Poor downside risk control';
+  if (value < 1) return 'Weak downside protection';
+  if (value < 2) return 'Moderate downside protection';
+  if (value < 3) return 'Good downside protection';
+  return 'Excellent downside protection';
+};
 
 export const RiskPanel = () => {
-  const risks = mockData.risks;
+  const [riskData, setRiskData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [animatedSummary, setAnimatedSummary] = useState('');
+  const [isSummaryTyping, setIsSummaryTyping] = useState(false);
+
+  const fallbackRisks = mockData.risks;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadRiskData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await getRiskAssessment();
+        if (!isMounted) return;
+        setRiskData(data);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Error fetching risk assessment:', err);
+        setError(err.message || 'Failed to load risk assessment');
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadRiskData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const risks = useMemo(() => {
+    if (!riskData) {
+      return fallbackRisks;
+    }
+
+    return {
+      beta: {
+        value: Number(riskData.beta ?? fallbackRisks.beta.value),
+        benchmark: fallbackRisks.beta.benchmark,
+        description: getBetaComment(Number(riskData.beta ?? fallbackRisks.beta.value)),
+      },
+      sharpeRatio: {
+        value: Number(riskData.sharpeRatio ?? fallbackRisks.sharpeRatio.value),
+        benchmark: fallbackRisks.sharpeRatio.benchmark,
+        description: getSharpeComment(Number(riskData.sharpeRatio ?? fallbackRisks.sharpeRatio.value)),
+      },
+      sortinoRatio: {
+        value: Number(riskData.sortinoRatio ?? fallbackRisks.sortinoRatio.value),
+        benchmark: fallbackRisks.sortinoRatio.benchmark,
+        description: getSortinoComment(Number(riskData.sortinoRatio ?? fallbackRisks.sortinoRatio.value)),
+      },
+    };
+  }, [riskData, fallbackRisks]);
+
+  const riskSummary = riskData?.riskSummary;
+  const fallbackSummary = 'Your portfolio has moderate volatility, with strong risk-adjusted returns and excellent downside protection.';
 
   const riskMetrics = [
     {
@@ -35,8 +122,56 @@ export const RiskPanel = () => {
     return 'text-danger';
   };
 
+  useEffect(() => {
+    const fullSummary = riskSummary || fallbackSummary;
+
+    if (!fullSummary) {
+      setAnimatedSummary('');
+      setIsSummaryTyping(false);
+      return;
+    }
+
+    setAnimatedSummary('');
+    setIsSummaryTyping(true);
+
+    let index = 0;
+    const typingInterval = setInterval(() => {
+      index += 1;
+      setAnimatedSummary(fullSummary.slice(0, index));
+
+      if (index >= fullSummary.length) {
+        clearInterval(typingInterval);
+        setIsSummaryTyping(false);
+      }
+    }, 16);
+
+    return () => clearInterval(typingInterval);
+  }, [riskSummary]);
+
+  if (loading) {
+    return (
+      <div className="terminal-loading">
+        <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-[#22314A] bg-[#0F1726] px-4 py-2">
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#5FA8FF]"></span>
+          <p className="text-sm terminal-muted">AI is thinking</p>
+          <div className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8FA2BC]"></span>
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8FA2BC]" style={{ animationDelay: '120ms' }}></span>
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8FA2BC]" style={{ animationDelay: '240ms' }}></span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fadeIn space-y-4">
+      {error && (
+        <div className="terminal-error">
+          <p className="text-sm text-[#FFD7DD]">Risk API unavailable, using fallback data.</p>
+        </div>
+      )}
+
       {riskMetrics.map((metric, idx) => (
         <div key={idx} className="terminal-surface rounded-[20px] p-4">
           <div className="flex items-center justify-between mb-3">
@@ -81,20 +216,10 @@ export const RiskPanel = () => {
 
       <div className="rounded-[20px] border border-[#1C2940] bg-[linear-gradient(180deg,rgba(16,25,39,0.98),rgba(11,18,32,0.98))] p-4">
         <h4 className="mb-2 text-sm font-semibold text-[#E8F0FB]">Portfolio Risk Summary</h4>
-        <ul className="space-y-2 text-xs text-[#DCE7F5]">
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-accent">*</span>
-            <span>Your portfolio has moderate volatility with a Beta of 1.24, indicating slightly higher risk than the market.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-success">*</span>
-            <span>Strong risk-adjusted returns with a Sharpe Ratio of 1.85, showing good compensation for risk taken.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="font-bold text-success">*</span>
-            <span>Excellent downside protection with a Sortino Ratio of 2.42, demonstrating strong performance during market downturns.</span>
-          </li>
-        </ul>
+        <p className="text-xs leading-relaxed text-[#DCE7F5]">
+          {animatedSummary}
+          {isSummaryTyping && <span className="ml-0.5 animate-pulse text-[#8FA2BC]">|</span>}
+        </p>
       </div>
     </div>
   );

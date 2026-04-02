@@ -5,6 +5,7 @@ const STOCKS_ENDPOINT = '/api/v1/dashboard/StockFinder/AllStocks';
 const STOCK_SEARCH_ENDPOINT = '/api/v1/dashboard/StockFinder/SearchForTickerOrCompanyname';
 const WATCHLIST_ENDPOINT = '/api/v1/dashboard/Watchlist';
 const WATCHLIST_ALL_ENDPOINT = '/api/v1/dashboard/Watchlist/AllStocks';
+const TRADE_ENDPOINT = '/api/v1/dashboard/Trade';
 
 const parseAbbreviatedNumber = (value) => {
   if (typeof value === 'number') return value;
@@ -101,6 +102,10 @@ export const addToWatchlist = async (symbol) => {
 export const removeFromWatchlist = async (symbol) => {
   await api.delete(`${WATCHLIST_ENDPOINT}/${symbol}`);
   return true;
+};
+
+export const executeTrade = async (tradeData) => {
+  return await api.post(TRADE_ENDPOINT, tradeData);
 };
 
 export const subscribeToPriceUpdates = (tickers, callback) => {
