@@ -1,26 +1,26 @@
 package com.sang.portfoliomanager.service;
+
 import com.sang.portfoliomanager.dto.TradeRequest;
 import com.sang.portfoliomanager.entity.AccountBalance;
 import com.sang.portfoliomanager.entity.Holding;
 import com.sang.portfoliomanager.repository.AccountBalanceRepository;
 import com.sang.portfoliomanager.repository.HoldingRepository;
-import com.sang.portfoliomanager.service.DashboardService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.*;
 
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class) // 2. 替代 MockitoAnnotations.openMocks，自动初始化 @Mock
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class DashboardServiceTest {
 
     @InjectMocks
@@ -32,9 +32,8 @@ class DashboardServiceTest {
     @Mock
     private AccountBalanceRepository balanceRepo;
 
-
     @Test
-    void testBuyTrade_Success() {
+    void testBuyTradeSuccess() {
         TradeRequest req = new TradeRequest();
         req.setAction("BUY");
         req.setSymbol("AAPL");
@@ -53,7 +52,7 @@ class DashboardServiceTest {
     }
 
     @Test
-    void testBuyTrade_InsufficientFunds() {
+    void testBuyTradeInsufficientFunds() {
         TradeRequest req = new TradeRequest();
         req.setAction("BUY");
         req.setSymbol("AAPL");
@@ -68,11 +67,11 @@ class DashboardServiceTest {
         String result = dashboardService.executeTrade(req);
 
         assertTrue(result.contains("Insufficient funds"));
-        verify(balanceRepo, never()).save(ArgumentMatchers.any(AccountBalance.class));
+        verify(balanceRepo, never()).save(any(AccountBalance.class));
     }
 
     @Test
-    void testSellTrade_Success() {
+    void testSellTradeSuccess() {
         TradeRequest req = new TradeRequest();
         req.setAction("SELL");
         req.setSymbol("AAPL");
@@ -92,11 +91,11 @@ class DashboardServiceTest {
         String result = dashboardService.executeTrade(req);
 
         assertTrue(result.contains("Trade Successful"));
-        verify(balanceRepo, times(1)).save(ArgumentMatchers.any(AccountBalance.class));
+        verify(balanceRepo, times(1)).save(any(AccountBalance.class));
     }
 
     @Test
-    void testSellTrade_NoHolding() {
+    void testSellTradeNoHolding() {
         TradeRequest req = new TradeRequest();
         req.setAction("SELL");
         req.setSymbol("AAPL");
@@ -111,12 +110,12 @@ class DashboardServiceTest {
 
         String result = dashboardService.executeTrade(req);
 
-        assertTrue(result.contains("You do not own this stock")); // 这里的 String 必须和你 Service 里的报错文字完全一致
-        verify(balanceRepo, never()).save(ArgumentMatchers.any(AccountBalance.class));
+        assertTrue(result.contains("You do not own this stock"));
+        verify(balanceRepo, never()).save(any(AccountBalance.class));
     }
 
     @Test
-    void testSellTrade_InsufficientQuantity() {
+    void testSellTradeInsufficientQuantity() {
         TradeRequest req = new TradeRequest();
         req.setAction("SELL");
         req.setSymbol("AAPL");
@@ -136,6 +135,6 @@ class DashboardServiceTest {
         String result = dashboardService.executeTrade(req);
 
         assertTrue(result.contains("Not enough shares to sell"));
-        verify(balanceRepo, never()).save(ArgumentMatchers.any(AccountBalance.class));
+        verify(balanceRepo, never()).save(any(AccountBalance.class));
     }
 }
